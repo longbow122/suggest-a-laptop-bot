@@ -14,6 +14,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  # Used for Dependabot Pull Requests. We need to ensure that builds pass when we update dependencies automatically. This can be done by granting contents: write
+  # Letting them create releases.
+  contents: write
+
 jobs:
   build:
 
