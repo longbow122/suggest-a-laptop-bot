@@ -15,3 +15,6 @@ updates:
       - "/data-model"
     schedule:
       interval: "weekly"
+    commit-message:
+      # Prefix all commit messages and the PR title with "DEPENDENCIES -"
+      prefix: "DEPENDENCIES - "
