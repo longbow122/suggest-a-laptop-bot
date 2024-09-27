@@ -1,0 +1,42 @@
+name: release.yml
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  release_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          #TODO NEED TO INCREMENT THE RELEASE NUMBER HERE
+          release_name: ${{ steps.version.outputs.version }}
+          #TODO NEED TO CHANGE THIS AS WELL, MOST LIKELY NEEDS TO BE CHANGED
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      #TODO NEED TO FIND A GOOD WAY OF GETTING THE FILEPATHS, SINCE OUR VERSION NUMBERING WILL BE BUMPED IN NEW VERSIONS.
+      - name: Upload Assets
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref_name, 'refs/tags/')
+        with:
+          files: |
+            api/target/suggest-a-laptop-bot-api-1.0.0.jar
+            bot/target/suggest-a-laptop-bot-bot-1.0.0.jar
+            data-model/target/suggest-a-laptop-bot-data-model-1.0.0.jar
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v4.1.1
