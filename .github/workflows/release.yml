@@ -1,6 +1,8 @@
 name: release.yml
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches: [ "main" ]
 
 jobs:
@@ -26,13 +28,15 @@ jobs:
           #TODO NEED TO INCREMENT THE RELEASE NUMBER HERE
           release_name: ${{ steps.version.outputs.version }}
           #TODO NEED TO CHANGE THIS AS WELL, MOST LIKELY NEEDS TO BE CHANGED
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name}}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       #TODO NEED TO FIND A GOOD WAY OF GETTING THE FILEPATHS, SINCE OUR VERSION NUMBERING WILL BE BUMPED IN NEW VERSIONS.
       - name: Upload Assets
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        # If the owner of the repo pushes this, then we should build it. Not very good detection at all.
+        #TODO NEED TO FIND A WAY TO ENSURE WE CAN GET THE NAME OF THE BRANCH THIS COMMIT CAME FROM.
+        if: startsWith(github.ref_name, 'MINOR/') || startsWith(github.ref_name, 'MAJOR/') || startsWith(github.ref_name, 'PATCH/') || startsWith(github.ref_name, 'MAJOR/')
         with:
           files: |
             api/target/suggest-a-laptop-bot-api-1.0.0.jar

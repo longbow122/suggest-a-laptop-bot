@@ -9,9 +9,8 @@
 name: Java CI with Maven
 
 on:
-  # No longer need this trigger since we run a different workflow to handle releasing squashed commits
-  #push:
-    #branches: [ "main" ]
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
