@@ -34,6 +34,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref_name, 'refs/tags/')
         with:
+          name: "Current Version"
+          draft: true
+          tag_name: ${{ github.ref_name}}
           files: |
             api/target/suggest-a-laptop-bot-api-1.0.0.jar
             bot/target/suggest-a-laptop-bot-bot-1.0.0.jar
