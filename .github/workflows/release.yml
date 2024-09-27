@@ -1,6 +1,8 @@
 name: release.yml
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches: [ "main" ]
 
 jobs:
