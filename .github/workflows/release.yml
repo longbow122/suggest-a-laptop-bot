@@ -1,8 +1,6 @@
 name: release.yml
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches: [ "main" ]
 
 jobs:
@@ -36,7 +34,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         # If the owner of the repo pushes this, then we should build it. Not very good detection at all.
         #TODO NEED TO FIND A WAY TO ENSURE WE CAN GET THE NAME OF THE BRANCH THIS COMMIT CAME FROM.
-        if: startsWith(github.ref_name, 'MINOR/') || startsWith(github.ref_name, 'MAJOR/') || startsWith(github.ref_name, 'PATCH/') || startsWith(github.ref_name, 'MAJOR/')
+        #if: startsWith(github.ref_name, 'MINOR/') || startsWith(github.ref_name, 'MAJOR/') || startsWith(github.ref_name, 'PATCH/') || startsWith(github.ref_name, 'MAJOR/')
         with:
           files: |
             api/target/suggest-a-laptop-bot-api-1.0.0.jar
