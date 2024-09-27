@@ -1,9 +1,5 @@
-- Why are these changes required?
+**Are your changes currently passing unit tests?**
 
-- Explain your changes here in minor detail.
+Have you had to add any new tests for your changes: **YES/NO**
 
-
-- Place an "x" in the middle to fill these boxes.
-
-* [ ] Are your changes currently passing unit tests?
-* [ ] Have you added any new tests for your changes?
+**Describe changes below:**
