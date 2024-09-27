@@ -26,7 +26,7 @@ jobs:
         with:
           name: "Current Version"
           make_latest: true
-          tag_name: ${{ github.ref_name}} ${{github.run_id}}
+          tag_name: ${{ github.ref_name}}${{github.run_id}}
           files: |
             api/target/suggest-a-laptop-bot-api-1.0.0.jar
             bot/target/suggest-a-laptop-bot-bot-1.0.0.jar
