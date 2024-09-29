@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -237,8 +236,6 @@ public class CopypastaRepositoryTest {
 	@Nested
 	class GetCopypasta {
 
-		//TODO TEST PASSING NULL INTO GET METHODS HERE
-
 		@BeforeEach
 		void init() {
 			Copypasta pasta = new Copypasta("testName", "testDescription", "This is a message");
@@ -259,8 +256,9 @@ public class CopypastaRepositoryTest {
 		@Test
 		void testGetCopypasta() {
 			// ? Test that getting a Copypasta by name works
-			Copypasta pasta = copypastaRepository.findCopypastaByName("testName");
-			assertEquals("testName", pasta.getName());
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
@@ -282,9 +280,9 @@ public class CopypastaRepositoryTest {
 		@Test
 		void testGetCopypastaNotExists() {
 			// ? Test that getting a Copypasta that should not exist fails properly.
-			Copypasta pasta = copypastaRepository.findCopypastaByName("notExisting");
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("notExisting");
 			assertEquals(7, copypastaRepository.count());
-			assertNull(pasta);
+			assertTrue(pasta.isEmpty());
 		}
 
 		@Test
@@ -308,17 +306,17 @@ public class CopypastaRepositoryTest {
 		@Test
 		void testGetCopypastaWithEmptyString() {
 			// ? Test that getting a Copypasta with an empty string fails properly.
-			Copypasta pasta = copypastaRepository.findCopypastaByName("");
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("");
 			assertEquals(7, copypastaRepository.count());
-			assertNull(pasta);
+			assertTrue(pasta.isEmpty());
 		}
 
 		@Test
 		void testGetCopypastaWithWhitespace() {
 			// ? Test that getting a Copypasta with a whitespace string fails properly.
-			Copypasta pasta = copypastaRepository.findCopypastaByName("  ");
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("  ");
 			assertEquals(7, copypastaRepository.count());
-			assertNull(pasta);
+			assertTrue(pasta.isEmpty());
 		}
 
 		@Test
@@ -338,6 +336,22 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, pasta.size());
 		}
 
+		@Test
+		void testGetCopypastaUsingNull() {
+			// ? Test that getting a single Copypasta when searching with null fails properly.
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName(null);
+			assertTrue(pasta.isEmpty());
+			assertEquals(7, copypastaRepository.count());
+		}
+
+		@Test
+		void testGetCopypastaStartingWithUsingNull() {
+			// ? Test that getting several Copypastas when searching will null fails properly
+			List<Copypasta> pastaList = copypastaRepository.findCopypastaByNameStartingWith(null);
+			assertEquals(0, pastaList.size());
+			assertEquals(7, copypastaRepository.count());
+		}
+
 	}
 
 	@Nested
@@ -354,9 +368,6 @@ public class CopypastaRepositoryTest {
 		void cleanup() {
 			copypastaRepository.deleteAll();
 		}
-		//TODO ADD EXTRA CASES FOR WHEN THE ORIGINAL COPYPASTA DOES NOT EXIST!
-
-		//TODO UPDATING VALUES TO EMPTIES AND WHITESPACES WERE ALLOWED THROUGH, THIS SHOULD NOT HAPPEN! WHERE IS THE EXCEPTION?
 
 
 		@Test
@@ -365,8 +376,9 @@ public class CopypastaRepositoryTest {
 			assertEquals(2, copypastaRepository.count());
 			copypastaRepository.updateCopypastaNameByName("testName", "newName");
 			assertEquals(2, copypastaRepository.count());
-			Copypasta pasta = copypastaRepository.findCopypastaByName("newName");
-			assertEquals("newName", pasta.getName());
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("newName");
+			assertTrue(pasta.isPresent());
+			assertEquals("newName", pasta.get().getName());
 		}
 
 
@@ -377,7 +389,9 @@ public class CopypastaRepositoryTest {
 			assertThrows(DataIntegrityViolationException.class, () -> {
 				copypastaRepository.updateCopypastaNameByName("testName", "testName1");
 			});
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
+			assertEquals("testName", pasta.get().getName());
 			assertEquals(2, copypastaRepository.count());
 		}
 
@@ -386,7 +400,9 @@ public class CopypastaRepositoryTest {
 			// ? Test that updating a Copypasta description works
 			assertEquals(2, copypastaRepository.count());
 			copypastaRepository.updateCopypastaDescriptionByName("testName", "newDescription");
-			assertEquals("newDescription", copypastaRepository.findCopypastaByName("testName").getDescription());
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
+			assertEquals("newDescription", pasta.get().getDescription());
 			assertEquals(2, copypastaRepository.count());
 		}
 
@@ -395,7 +411,9 @@ public class CopypastaRepositoryTest {
 			// ? Test that updating a Copypasta message works
 			assertEquals(2, copypastaRepository.count());
 			copypastaRepository.updateCopypastaMessageByName("testName", "newMessage");
-			assertEquals("newMessage", copypastaRepository.findCopypastaByName("testName").getMessage());
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
+			assertEquals("newMessage", pasta.get().getMessage());
 			assertEquals(2, copypastaRepository.count());
 		}
 
@@ -404,11 +422,12 @@ public class CopypastaRepositoryTest {
 		void testEmptyNameUpdate() {
 			// ? Test that updating a Copypasta to an empty name does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			//TODO NOTHING IS BEING THROWN HERE EITHER?
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaNameByName("testName", "");
 			});
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
+			assertEquals("testName", pasta.get().getName());
 			assertEquals(2, copypastaRepository.count());
 		}
 
@@ -420,8 +439,10 @@ public class CopypastaRepositoryTest {
 			assertThrows(DataIntegrityViolationException.class, () -> {
 				copypastaRepository.updateCopypastaNameByName("testName", StringUtils.repeat("a", 55));
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 
@@ -429,38 +450,39 @@ public class CopypastaRepositoryTest {
 		void testNullNameUpdate() {
 			// ? Test that updating a Copypasta to a null name does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaNameByName("testName", null);
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
 		void testWhitespaceNameUpdate() {
 			// ? Test that updating a Copypasta to a whitespace name does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			//TODO IF WE USE SAVE TO HANDLE AN UPSERT, WE NOW GET TO WORK WITH A NEW EXCEPTION WHICH WORKS BETTER FOR US, SINCE
-			// WE CAN NOW USE THAT TO STATE THAT THE TRANSACTION FAILED!
-
-			//TODO NOT EXISTS CAN ALSO BE DONE USING ANOTHER QUERY!
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaNameByName("testName", " ");
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			//TODO THIS SHOULD NOT BE HAPPENING! HAVING A WHITESPACE AS THE NAME SHOULD BE BREAKING CONSTRAINTS
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
 		void testEmptyDescriptionUpdate() {
 			// ? Test that updating a Copypasta to an empty description does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaDescriptionByName("testName", "");
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("newDescription", copypastaRepository.findCopypastaByName("testName").getDescription());
+			assertEquals("testDescription", pasta.get().getDescription());
 		}
 
 		@Test
@@ -470,41 +492,49 @@ public class CopypastaRepositoryTest {
 			assertThrows(DataIntegrityViolationException.class, () -> {
 				copypastaRepository.updateCopypastaDescriptionByName("testName", StringUtils.repeat("b", 150));
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testDescription", copypastaRepository.findCopypastaByName("testName").getDescription());
+			assertEquals("testDescription", pasta.get().getDescription());
 		}
 
 		@Test
 		void testNullDescriptionUpdate() {
 			// ? Test that updating a Copypasta to a null description does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaDescriptionByName("testName", null);
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testDescription", copypastaRepository.findCopypastaByName("testName").getDescription());
+			assertEquals("testDescription", pasta.get().getDescription());
 		}
 
 		@Test
 		void testWhitespaceDescriptionUpdate() {
 			// ? Test that updating a Copypasta to a whitespace description does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaDescriptionByName("testName", " ");
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("newDescription", copypastaRepository.findCopypastaByName("testName").getDescription());
+			assertEquals("testDescription", pasta.get().getDescription());
 		}
 
 		@Test
 		void testEmptyMessageUpdate() {
 			// ? Test that updating a Copypasta to an empty message does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaMessageByName("testName", "");
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
@@ -514,30 +544,36 @@ public class CopypastaRepositoryTest {
 			assertThrows(DataIntegrityViolationException.class, () -> {
 				copypastaRepository.updateCopypastaMessageByName("testName", StringUtils.repeat("c", 3000));
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
 		void testNullMessageUpdate() {
 			// ? Test that updating a Copypasta to a null message does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaMessageByName("testName", null);
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
 		void testWhitespaceMessageUpdate() {
 			// ? Test that updating a Copypasta to a whitespace message does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> {
+			assertThrows(TransactionSystemException.class, () -> {
 				copypastaRepository.updateCopypastaMessageByName("testName", " ");
 			});
+			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
+			assertTrue(pasta.isPresent());
 			assertEquals(2, copypastaRepository.count());
-			assertEquals("testName", copypastaRepository.findCopypastaByName("testName").getName());
+			assertEquals("testName", pasta.get().getName());
 		}
 
 		@Test
@@ -660,13 +696,36 @@ public class CopypastaRepositoryTest {
 			});
 			assertEquals(2, copypastaRepository.count());
 		}
-		//TODO TESTS FOR UPDATING HERE
-		// UPDATE NAME
-		// UPDATE NAME TO A PRIMARY KEY THAT EXISTS
-		// UPDATE FIELD
-		// UPDATE VALUE
 
-		//TODO TEST CONSTRAINTS FOR EVERY COPYPASTA FIELD HERE TOO
+		@Test
+		void testUpdateNameCopypastaNotExists() {
+			// ? Test that trying to update a Copypasta that does not exist fails properly
+			assertEquals(2, copypastaRepository.count());
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+				copypastaRepository.updateCopypastaNameByName("NotExists", "newName");
+			});
+			assertEquals(2, copypastaRepository.count());
+		}
+
+		@Test
+		void testUpdateDescriptionCopypastaNotExists() {
+			// ? Test that trying to update a Copypasta that does not exist fails properly
+			assertEquals(2, copypastaRepository.count());
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+				copypastaRepository.updateCopypastaDescriptionByName("NotExists", "newDesc");
+			});
+			assertEquals(2, copypastaRepository.count());
+		}
+
+		@Test
+		void testUpdateMessageCopypastaNotExists() {
+			// ? Test that trying to update a Copypasta that does not exist fails properly
+			assertEquals(2, copypastaRepository.count());
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+				copypastaRepository.updateCopypastaMessageByName("NotExists", "newMess");
+			});
+			assertEquals(2, copypastaRepository.count());
+		}
 	}
 
 	@Nested
@@ -700,9 +759,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteNotExistsCopypasta() {
 			// ? Test that deleting a Copypasta that does not exist will fail.
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-				copypastaRepository.deleteCopypastaByName("notExists");
-			});
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName("notExists"));
 			assertEquals(6, copypastaRepository.count());
 		}
 
@@ -718,9 +775,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastasByWhitespaceString() {
 			// ? Test that deleting all Copypasta by whitespace string works
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-				copypastaRepository.deleteCopypastaByName(" ");
-			});
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(" "));
 			assertEquals(6, copypastaRepository.count());
 		}
 
@@ -728,9 +783,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastasByNullString() {
 			// ? Test that deleting all Copypasta by null string works
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-				copypastaRepository.deleteCopypastaByName(null);
-			});
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(null));
 			assertEquals(6, copypastaRepository.count());
 		}
 
@@ -739,9 +792,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastasByEmptyString() {
 			// ? Test that deleting all Copypasta by empty string works
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-				copypastaRepository.deleteCopypastaByName("");
-			});
+			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(""));
 			assertEquals(6, copypastaRepository.count());
 		}
 	}

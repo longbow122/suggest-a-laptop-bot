@@ -1,16 +1,15 @@
 package me.longbow122.datamodel.repository;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotBlank;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CopypastaRepository extends JpaRepository<Copypasta, String> {
@@ -20,7 +19,7 @@ public interface CopypastaRepository extends JpaRepository<Copypasta, String> {
 	//TODO OUR TEST SEEMS TO BE WORKING PROPERLY USING IN-MEMORY WITH PROPERTIES
 	// NEED TO ENSURE WE CAN USE FILE-BASED FOR OURSELVES SOMEHOW, OR WORST-CASE, GCP SQL
 
-	Copypasta findCopypastaByName(String name);
+	Optional<Copypasta> findCopypastaByName(String name);
 
 	List<Copypasta> findCopypastaByNameStartingWith(String name);
 
@@ -37,54 +36,45 @@ public interface CopypastaRepository extends JpaRepository<Copypasta, String> {
 		}
 	}
 
-	@Transactional
-	@Modifying
-	@Query("UPDATE Copypasta c SET c.name = :newName WHERE c.name = :name")
-	int updateCopypastaNameByNameNaturalId(@Param("name") String name, @Param("newName") String newName);
-
-
-	@Transactional
-	@Modifying
-	@Query("UPDATE Copypasta c SET c.description = :newDescription WHERE c.name = :name")
-	int updateCopypastaDescriptionByNameNaturalId(@Param("name") String name, @Param("newDescription") String newDescription);
-
-
-	@Transactional
-	@Modifying
-	@Query("UPDATE Copypasta c SET c.message = :newMessage WHERE c.name = :name")
-	int updateCopypastaMessageByNameNaturalId(@Param("name") String name, @Param("newMessage") String newMessage);
+	//TODO UPDATING IN THIS MANNER SHOULD REALLY BE DONE IN THE SERVICE LAYER!! NEED TO MOVE THINGS AROUND AND PUT IT THERE WHEN DONE!
+	// THIS IS PERFORMING A GOOD AMOUNT OF LOGIC AND IS NOW STRAYING AWAY FROM THE USUAL CRUD-ONLY MANNER WE WANT TO MAINTAIN HERE.
+	// AS SUCH, WE SHOULD MOVE THIS INTO THE SERVICE LAYER ASAP, ALONG WITH OTHER RELEVANT TESTS.
 
 	@Transactional
 	default void updateCopypastaNameByName(String name, String newName) {
-		if (findCopypastaByName(name) == null) {
+		Optional<Copypasta> pasta = findCopypastaByName(name);
+		if (pasta.isEmpty()) {
 			throw new EntityNotFoundException("Copypasta with name: " + name + " does not exist");
 		}
-		Copypasta newPasta = findCopypastaByName(name);
+		Copypasta newPasta = pasta.get();
 		newPasta.setName(newName);
 		save(newPasta);
 	}
 
 	@Transactional
 	default void updateCopypastaDescriptionByName(String name, String newDescription) {
-		if (findCopypastaByName(name) == null) {
+		Optional<Copypasta> pasta = findCopypastaByName(name);
+		if (pasta.isEmpty()) {
 			throw new EntityNotFoundException("Copypasta with name: " + name + " does not exist!");
 		}
-		Copypasta newPasta = findCopypastaByName(name);
+		Copypasta newPasta = pasta.get();
 		newPasta.setDescription(newDescription);
 		save(newPasta);
 	}
 
-	//TODO DO WE WANT TO BE USING THE NEW WAY, OR THE OLD WAY? THE NEW WAY WORKS, BUT MEANS WHEN WE BREAK CONSTRAINTS WITH AN UPDATE
-	// WE DON'T GET THE RIGHT EXCEPTION.
-
-	//TODO THE OLD WAY WORKS, ONLY FOR NULL UPDATES, EMPTY AND WHITESPACES WILL FAIL.
-
 	//TODO NEED TO SEE IF WE CAN GET THE RIGHT EXCEPTION TO COME OUT, IDEALLY DATAINTEGRITYVIOLATION!
+
+	//TODO THE WAY OF USING SAVES IS IDEAL, BUT IS NOT WHAT WE ARE MEANT TO BE DOING IN THE REPOSITORY LAYER! WE NEED TO MOVE THIS LOGIC
+	// TO THE SERVICE LAYER, ALONG WITH THE TESTS
 
 	@Transactional
 	default void updateCopypastaMessageByName(String name, String newMessage) {
-		if (updateCopypastaMessageByNameNaturalId(name, newMessage) == 0) {
-			throw new EntityNotFoundException("No Copypasta with name " + name + " exists.");
+		Optional<Copypasta> pasta = findCopypastaByName(name);
+		if (pasta.isEmpty()) {
+			throw new EntityNotFoundException("Copypasta with name: " + name + " does not exist!");
 		}
+		Copypasta newPasta = pasta.get();
+		newPasta.setMessage(newMessage);
+		save(newPasta);
 	}
 }
