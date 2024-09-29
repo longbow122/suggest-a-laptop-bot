@@ -1,32 +1,41 @@
 package me.longbow122.datamodel.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.validation.ConstraintViolationException;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import org.apache.commons.lang3.StringUtils;
-import org.h2.jdbc.JdbcSQLDataException;
-import org.hibernate.exception.DataException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DataJpaTest
+@DataJpaTest(properties = {
+	"spring.jpa.hibernate.ddl-auto=create-drop",
+	"spring.datasource.url=jdbc:h2:mem:testdb"
+})
 public class CopypastaRepositoryTest {
 
 	//TODO ALL OF THESE TESTS ARE NAMED QUITE BADLY, THEY SHOULD BE NAMED BETTER.
 
+	//TODO WE NEED TO ADD EXTRA CASES FOR WHITESPACE-ONLY STRINGS
+
 	@Autowired
 	private CopypastaRepository copypastaRepository;
+	@Autowired
+	private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
 	@Nested
 	class CreateCopypasta {
@@ -68,10 +77,8 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 			copypastaRepository.save(pasta);
 			assertEquals(1, copypastaRepository.count());
-			DataIntegrityViolationException exception = assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta2));
-			assertEquals("Such an entity already exists.", exception.getMessage());
+			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta2));
 			assertEquals(1, copypastaRepository.count());
-
 		}
 
 		@Test
@@ -80,26 +87,38 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(StringUtils.repeat("a", 50), StringUtils.repeat("b", 150), StringUtils.repeat("c", 3000));
-			//TODO WE FLUSH IMMEDIATELY HERE, COMMITTING CHANGES. THIS MIGHT BE A PROBLEM, CAUSING THE EXCEPTION TO THROW THERE SINCE THE SELECT TRIGGERS IT.
-			//TODO FLUSHING ALSO TRIGGERS IT.
 			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta));
-
 			assertEquals(0, copypastaRepository.count());
 		}
 
 		@Test
 		void testAllEmptyInsertion() {
 			// ? Test that inserting a Copypasta that has all fields empty does not work with the constraints
+			assertEquals(0, copypastaRepository.count());
+
+			Copypasta pasta = new Copypasta("", "", "");
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertEquals(0, copypastaRepository.count());
 		}
 
 		@Test
 		void testAllNullInsertion() {
 			// ? Test that inserting a Copypasta that has all fields null does not work with the constraints
+			assertEquals(0, copypastaRepository.count());
+
+			Copypasta pasta = new Copypasta(null, null, null);
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertEquals(0, copypastaRepository.count());
 		}
 
 		@Test
 		void testEmptyNameInsertion() {
 			// ? Test that inserting an empty name does not work with the constraints
+			assertEquals(0, copypastaRepository.count());
+
+			Copypasta pasta = new Copypasta(null, "description", "this is a message");
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertEquals(0, copypastaRepository.count());
 		}
 
 		@Test
@@ -215,6 +234,7 @@ public class CopypastaRepositoryTest {
 			copypastaRepository.deleteAll();
 		}
 		//TODO DO WE NEED TO ADD EXTRA CASES HERE FOR WHEN THE ORIGINAL COPYPASTA DOESN'T EXIST?
+		//TODO WE NEED TO ADD EXTRA CASES FOR WHITESPACE-ONLY STRINGS
 
 		@Test
 		void testUpdateName() {

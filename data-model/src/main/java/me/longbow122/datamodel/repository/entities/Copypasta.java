@@ -1,33 +1,47 @@
 package me.longbow122.datamodel.repository.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.annotations.NaturalId;
 
 @Entity
 @AllArgsConstructor
-@Getter
-@Table(name = "copypasta")
+@Table(name = "copypasta", indexes = @Index(columnList = "name"), uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Copypasta {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+	@NaturalId(mutable = true)
 	@Column(unique = true, nullable = false, length = 32)
+	@NotNull(message = "Name cannot be null")
+	@NotBlank(message = "Name is required")
+	@Getter
 	private String name;
 
 	@Column(nullable = false, length = 100)
+	@NotNull(message = "Description cannot be null")
+	@NotBlank(message = "Description is required")
+	@Getter
 	private String description;
 
 	@Column(nullable = false, length = 2000)
+	@NotNull(message = "Message cannot be null")
+	@NotBlank(message = "Message is required")
+	@Getter
 	private String message;
 
-	//TODO NOT REALLY NEEDED, REMOVE WHEN TESTS ARE DONE
-	@Override
-	public String toString() {
-		return "Name: " + name + "\nDescription: " + description + "\nMessage: " + message;
+	public Copypasta(String name, String description, String message) {
+		this.name = name;
+		this.description = description;
+		this.message = message;
 	}
 
-	public Copypasta() {}
+	public Copypasta() {
+
+	}
 }
