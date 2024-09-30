@@ -25,6 +25,18 @@ public class CopypastaRepositoryTest {
 
 	//TODO ALL OF THESE TESTS ARE NAMED QUITE BADLY, THEY SHOULD BE NAMED BETTER.
 
+	/*
+	* If a test is suffixed with "shouldPass", then we are testing expected behaviour. We are giving in some input, and checking to see
+	* whether we get expected output.
+	*
+	* If a test is suffixed with "shouldFail", then we are testing unexpected behaviour. We are giving in some input, and checking to see
+	* if it fails in the way we intend for it to fail. In this event, we usually expect an exception of some sort.
+	*
+	* All tests written here are expected to pass, but their suffixing will tell you what the criteria for the test passing is.
+	*
+	* There will also be a comment with each test case describing what we are testing here.
+	 */
+
 	@Autowired
 	private CopypastaRepository copypastaRepository;
 
@@ -38,7 +50,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testValidInsertion() {
+		void testValidInsertion_shouldPass() {
 			// ? Test that inserting a record with the right information formatting works
 			Copypasta pasta = new Copypasta("testName", "testDescription", "This is a message");
 			assertEquals(0, copypastaRepository.count());
@@ -49,7 +61,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testMultipleValidInsertion() {
+		void testMultipleValidInsertion_shouldPass() {
 			// ? Test that inserting multiple records with the right information works.
 			Copypasta pasta = new Copypasta("testName", "testDescription", "This is a message");
 			Copypasta pasta2 = new Copypasta("testName1", "testDesc", "This is another message");
@@ -61,7 +73,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testPrimaryKeyCollisionInsertion() {
+		void testPrimaryKeyCollisionInsertion_shouldFail() {
 			// ? Test that inserting a record with the same primary key as an existing record does not work.
 			Copypasta pasta = new Copypasta("testName", "testDescription", "This is a message");
 			Copypasta pasta2 = new Copypasta("testName", "testDesc", "This is another message");
@@ -73,7 +85,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testAllLargeSizeInsertion() {
+		void testAllLargeSizeInsertion_shouldFail() {
 			// ? Test that inserting a Copypasta that breaks size constraints does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -83,7 +95,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testAllEmptyInsertion() {
+		void testAllEmptyInsertion_shouldFail() {
 			// ? Test that inserting a Copypasta that has all fields empty does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -93,7 +105,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testAllNullInsertion() {
+		void testAllNullInsertion_shouldFail() {
 			// ? Test that inserting a Copypasta that has all fields null does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -103,7 +115,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testEmptyNameInsertion() {
+		void testEmptyNameInsertion_shouldFail() {
 			// ? Test that inserting an empty name does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -113,7 +125,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testLargeNameInsertion() {
+		void testLargeNameInsertion_shouldFail() {
 			// ? Test that inserting a name that is too large does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -123,7 +135,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testNullNameInsertion() {
+		void testNullNameInsertion_shouldFail() {
 			// ? Test that inserting a null name does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -133,7 +145,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testEmptyDescriptionInsertion() {
+		void testEmptyDescriptionInsertion_shouldFail() {
 			// ? Test that inserting an empty name does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -143,7 +155,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testLargeDescriptionInsertion() {
+		void testLargeDescriptionInsertion_shouldFail() {
 			// ? Test that inserting a description that is too large does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -153,7 +165,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testNullDescriptionInsertion() {
+		void testNullDescriptionInsertion_shouldFail() {
 			// ? Test that inserting a null name does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -163,7 +175,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testEmptyMessageInsertion() {
+		void testEmptyMessageInsertion_shouldFail() {
 			// ? Test that inserting an empty message does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -173,7 +185,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testLargeMessageInsertion() {
+		void testLargeMessageInsertion_shouldFail() {
 			// ? Test that inserting a message that is too large does not work with the constraints.
 			assertEquals(0, copypastaRepository.count());
 
@@ -183,7 +195,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testNullMessageInsertion() {
+		void testNullMessageInsertion_shouldFail() {
 			// ? Test that inserting a null message does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -193,7 +205,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testAllWhitespaceOnlyInsertion() {
+		void testAllWhitespaceOnlyInsertion_shouldFail() {
 			// ? Test that inserting whitespace-only for all fields does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -203,7 +215,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testWhitespaceOnlyNameInsertion() {
+		void testWhitespaceOnlyNameInsertion_shouldFail() {
 			// ? Test that inserting a whitespace-only name does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -213,7 +225,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testWhitespaceOnlyDescriptionInsertion() {
+		void testWhitespaceOnlyDescriptionInsertion_shouldFail() {
 			// ? Test that inserting a whitespace-only description does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -223,7 +235,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testWhitespaceOnlyMessageInsertion() {
+		void testWhitespaceOnlyMessageInsertion_shouldFail() {
 			// ? Test that inserting a whitespace-only message does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
@@ -254,7 +266,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypasta() {
+		void testGetCopypasta_shouldPass() {
 			// ? Test that getting a Copypasta by name works
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
 			assertTrue(pasta.isPresent());
@@ -262,7 +274,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetAllCopypastas() {
+		void testGetAllCopypastas_shouldPass() {
 			// ? Test that getting all Copypastas works
 			List<Copypasta> copypastaList = copypastaRepository.findAll();
 			assertEquals(7, copypastaList.size());
@@ -270,7 +282,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaStartingWith() {
+		void testGetCopypastaStartingWith_shouldPass() {
 			// ? Test that getting all Copypastas starting with a string works
 			List<Copypasta> copypastaList = copypastaRepository.findCopypastaByNameStartingWith("testName");
 			assertEquals(6, copypastaList.size());
@@ -278,7 +290,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaNotExists() {
+		void testGetCopypastaNotExists_shouldPass() {
 			// ? Test that getting a Copypasta that should not exist fails properly.
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("notExisting");
 			assertEquals(7, copypastaRepository.count());
@@ -286,7 +298,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetAllCopypastasEmptyList() {
+		void testGetAllCopypastasEmptyList_shouldPass() {
 			// ? Test that getting all Copypastas from an empty repository provides an empty list
 			assertEquals(7, copypastaRepository.findAll().size());
 			assertEquals(7, copypastaRepository.count());
@@ -296,7 +308,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaStartingWithNotExists() {
+		void testGetCopypastaStartingWithNotExists_shouldPass() {
 			// ? Test that getting all Copypastas starting with a string provides an empty List when it cannot find anything.
 			assertEquals(7, copypastaRepository.count());
 			List<Copypasta> copypastaList = copypastaRepository.findCopypastaByNameStartingWith("NotExisting");
@@ -304,7 +316,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaWithEmptyString() {
+		void testGetCopypastaWithEmptyString_shouldPass() {
 			// ? Test that getting a Copypasta with an empty string fails properly.
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("");
 			assertEquals(7, copypastaRepository.count());
@@ -312,7 +324,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaWithWhitespace() {
+		void testGetCopypastaWithWhitespace_shouldPass() {
 			// ? Test that getting a Copypasta with a whitespace string fails properly.
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("  ");
 			assertEquals(7, copypastaRepository.count());
@@ -320,7 +332,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaStartingWithEmptyString() {
+		void testGetCopypastaStartingWithEmptyString_shouldPass() {
 			// ? Test that getting a Copypasta with an empty string gets everything.
 			List<Copypasta> pasta = copypastaRepository.findCopypastaByNameStartingWith("");
 			assertEquals(7, copypastaRepository.count());
@@ -329,7 +341,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testGetCopypastaStartingWithWhitespace() {
+		void testGetCopypastaStartingWithWhitespace_shouldPass() {
 			// ? Test that getting a Copypasta with a whitespace string fails properly.
 			List<Copypasta> pasta = copypastaRepository.findCopypastaByNameStartingWith("  ");
 			assertEquals(7, copypastaRepository.count());
@@ -337,7 +349,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaUsingNull() {
+		void testGetCopypastaUsingNull_shouldPass() {
 			// ? Test that getting a single Copypasta when searching with null fails properly.
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName(null);
 			assertTrue(pasta.isEmpty());
@@ -345,7 +357,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testGetCopypastaStartingWithUsingNull() {
+		void testGetCopypastaStartingWithUsingNull_shouldPass() {
 			// ? Test that getting several Copypastas when searching will null fails properly
 			List<Copypasta> pastaList = copypastaRepository.findCopypastaByNameStartingWith(null);
 			assertEquals(0, pastaList.size());
@@ -371,7 +383,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testUpdateName() {
+		void testUpdateName_shouldPass() {
 			// ? Test that updating a Copypasta name works
 			assertEquals(2, copypastaRepository.count());
 			copypastaRepository.updateCopypastaNameByName("testName", "newName");
@@ -383,7 +395,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testUpdateNameToExistingPrimaryKey() {
+		void testUpdateNameToExistingPrimaryKey_shouldPass() {
 			// ? Test that updating a Copypasta name to an existing primary key does not work under the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
@@ -396,7 +408,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateDescription() {
+		void testUpdateDescription_shouldPass() {
 			// ? Test that updating a Copypasta description works
 			assertEquals(2, copypastaRepository.count());
 			copypastaRepository.updateCopypastaDescriptionByName("testName", "newDescription");
@@ -407,7 +419,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateMessage() {
+		void testUpdateMessage_shouldPass() {
 			// ? Test that updating a Copypasta message works
 			assertEquals(2, copypastaRepository.count());
 			copypastaRepository.updateCopypastaMessageByName("testName", "newMessage");
@@ -419,7 +431,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testEmptyNameUpdate() {
+		void testEmptyNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to an empty name does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -433,7 +445,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testLargeNameUpdate() {
+		void testLargeNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a name that is too large does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
@@ -447,7 +459,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testNullNameUpdate() {
+		void testNullNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a null name does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -460,7 +472,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testWhitespaceNameUpdate() {
+		void testWhitespaceNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a whitespace name does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -473,7 +485,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testEmptyDescriptionUpdate() {
+		void testEmptyDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to an empty description does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -486,7 +498,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testLargeDescriptionUpdate() {
+		void testLargeDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a description that is too large does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
@@ -499,7 +511,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testNullDescriptionUpdate() {
+		void testNullDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a null description does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -512,7 +524,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testWhitespaceDescriptionUpdate() {
+		void testWhitespaceDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a whitespace description does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -525,7 +537,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testEmptyMessageUpdate() {
+		void testEmptyMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to an empty message does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -538,7 +550,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testLargeMessageUpdate() {
+		void testLargeMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a message that is too large does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
@@ -551,7 +563,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testNullMessageUpdate() {
+		void testNullMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a null message does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -564,7 +576,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testWhitespaceMessageUpdate() {
+		void testWhitespaceMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a whitespace message does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(TransactionSystemException.class, () -> {
@@ -577,7 +589,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateNameNameNotExists() {
+		void testUpdateNameNameNotExists_shouldFail() {
 			// ? Test that trying to update a Copypasta message with a name that does not exist fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -588,7 +600,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testUpdateDescriptionNameNotExists() {
+		void testUpdateDescriptionNameNotExists_shouldFail() {
 			// ? Test that trying to update a Copypasta description with a name that does not exist fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -598,7 +610,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateMessageNameNotExists() {
+		void testUpdateMessageNameNotExists_shouldFail() {
 			// ? Test that trying to update a Copypasta message with a name that does not exist fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -608,7 +620,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateNameNameNull() {
+		void testUpdateNameNameNull_shouldFail() {
 			// ? Test that trying to update a Copypasta name with a name that is null fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -618,7 +630,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateDescriptionNameNull() {
+		void testUpdateDescriptionNameNull_shouldFail() {
 			// ? Test that trying to upddate a Copypasta description with a name that is null fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -628,7 +640,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateMessageNameNull() {
+		void testUpdateMessageNameNull_shouldFail() {
 			// ? Test that trying to update a Copypasta message with a name that is null fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -638,7 +650,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateNameNameEmpty() {
+		void testUpdateNameNameEmpty_shouldFail() {
 			// ? Test that trying to update a Copypasta name with a name that is empty fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -648,7 +660,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateDescriptionNameEmpty() {
+		void testUpdateDescriptionNameEmpty_shouldFail() {
 			// ? test that trying to update a Copypasta description with a name that is empty fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -658,7 +670,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateMessageNameEmpty() {
+		void testUpdateMessageNameEmpty_shouldFail() {
 			// ? Test that trying to update a Copypasta message with a name that is empty fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -668,7 +680,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateNameNameWhitespace() {
+		void testUpdateNameNameWhitespace_shouldFail() {
 			// ? Test that trying to update a Copypasta name with a name that is a whitespace fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -678,7 +690,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateDescriptionNameWhitespace() {
+		void testUpdateDescriptionNameWhitespace_shouldFail() {
 			// ? Test that trying to update a Copypasta description with a name that is a whitespace fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -688,7 +700,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateMessageNameWhitespace() {
+		void testUpdateMessageNameWhitespace_shouldFail() {
 			// ? Test that trying to update a Copypasta message with a name that is a whitespace fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -698,7 +710,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateNameCopypastaNotExists() {
+		void testUpdateNameCopypastaNotExists_shouldFail() {
 			// ? Test that trying to update a Copypasta that does not exist fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -708,7 +720,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateDescriptionCopypastaNotExists() {
+		void testUpdateDescriptionCopypastaNotExists_shouldFail() {
 			// ? Test that trying to update a Copypasta that does not exist fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -718,7 +730,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testUpdateMessageCopypastaNotExists() {
+		void testUpdateMessageCopypastaNotExists_shouldFail() {
 			// ? Test that trying to update a Copypasta that does not exist fails properly
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> {
@@ -748,7 +760,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testDeleteCopypastaByName() {
+		void testDeleteCopypastaByName_shouldPass() {
 			// ? Test that deleting a Copypasta by name works
 			assertEquals(6, copypastaRepository.count());
 			copypastaRepository.deleteCopypastaByName("testName");
@@ -756,7 +768,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testDeleteNotExistsCopypasta() {
+		void testDeleteNotExistsCopypasta_shouldFail() {
 			// ? Test that deleting a Copypasta that does not exist will fail.
 			assertEquals(6, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName("notExists"));
@@ -764,7 +776,7 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testDeleteAllCopypasta() {
+		void testDeleteAllCopypasta_shouldPass() {
 			// ? Test that deleting all Copypasta works
 			assertEquals(6, copypastaRepository.count());
 			copypastaRepository.deleteAll();
@@ -772,16 +784,16 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testDeleteCopypastasByWhitespaceString() {
-			// ? Test that deleting all Copypasta by whitespace string works
+		void testDeleteCopypastasByWhitespaceString_shouldFail() {
+			// ? Test that deleting a Copypasta when passing in a whitespace string fails properly
 			assertEquals(6, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(" "));
 			assertEquals(6, copypastaRepository.count());
 		}
 
 		@Test
-		void testDeleteCopypastasByNullString() {
-			// ? Test that deleting all Copypasta by null string works
+		void testDeleteCopypastasByNullString_shouldFail() {
+			// ? Test that deleting a Copypasta when passing in a null string fails properly
 			assertEquals(6, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(null));
 			assertEquals(6, copypastaRepository.count());
@@ -789,8 +801,8 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testDeleteCopypastasByEmptyString() {
-			// ? Test that deleting all Copypasta by empty string works
+		void testDeleteCopypastasByEmptyString_shouldFail() {
+			// ? Test that deleting a Copypasta when passing in an empty string fails properly
 			assertEquals(6, copypastaRepository.count());
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(""));
 			assertEquals(6, copypastaRepository.count());
