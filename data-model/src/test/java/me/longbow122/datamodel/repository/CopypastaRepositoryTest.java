@@ -1,7 +1,6 @@
 package me.longbow122.datamodel.repository;
 
 import me.longbow122.datamodel.repository.entities.Copypasta;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -87,7 +86,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that inserting a Copypasta that breaks size constraints does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
-			Copypasta pasta = new Copypasta(StringUtils.repeat("a", 50), StringUtils.repeat("b", 150), StringUtils.repeat("c", 3000));
+			Copypasta pasta = new Copypasta(repeatString('a', 50), repeatString('b', 150), repeatString('c', 3000));
 			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
@@ -127,7 +126,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that inserting a name that is too large does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
-			Copypasta pasta = new Copypasta(StringUtils.repeat("a", 50), "description", "this is a message");
+			Copypasta pasta = new Copypasta(repeatString('a', 50), "description", "this is a message");
 			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
@@ -157,7 +156,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that inserting a description that is too large does not work with the constraints
 			assertEquals(0, copypastaRepository.count());
 
-			Copypasta pasta = new Copypasta("name", StringUtils.repeat("b", 150), "this is a message");
+			Copypasta pasta = new Copypasta("name", repeatString('b', 150), "this is a message");
 			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
@@ -187,7 +186,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that inserting a message that is too large does not work with the constraints.
 			assertEquals(0, copypastaRepository.count());
 
-			Copypasta pasta = new Copypasta("name", "description", StringUtils.repeat("c", 3000));
+			Copypasta pasta = new Copypasta("name", "description", repeatString('c', 3000));
 			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
@@ -393,7 +392,7 @@ public class CopypastaRepositoryTest {
 
 
 		@Test
-		void testUpdateNameToExistingPrimaryKey_shouldPass() {
+		void testUpdateNameToExistingPrimaryKey_shouldFail() {
 			// ? Test that updating a Copypasta name to an existing primary key does not work under the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
@@ -447,7 +446,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that updating a Copypasta to a name that is too large does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
-				copypastaRepository.updateCopypastaNameByName("testName", StringUtils.repeat("a", 55));
+				copypastaRepository.updateCopypastaNameByName("testName", repeatString('a', 55));
 			});
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
 			assertTrue(pasta.isPresent());
@@ -500,7 +499,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that updating a Copypasta to a description that is too large does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
-				copypastaRepository.updateCopypastaDescriptionByName("testName", StringUtils.repeat("b", 150));
+				copypastaRepository.updateCopypastaDescriptionByName("testName", repeatString('b', 150));
 			});
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
 			assertTrue(pasta.isPresent());
@@ -552,7 +551,7 @@ public class CopypastaRepositoryTest {
 			// ? Test that updating a Copypasta to a message that is too large does not work with the constraints
 			assertEquals(2, copypastaRepository.count());
 			assertThrows(DataIntegrityViolationException.class, () -> {
-				copypastaRepository.updateCopypastaMessageByName("testName", StringUtils.repeat("c", 3000));
+				copypastaRepository.updateCopypastaMessageByName("testName", repeatString('c', 3000));
 			});
 			Optional<Copypasta> pasta = copypastaRepository.findCopypastaByName("testName");
 			assertTrue(pasta.isPresent());
@@ -805,5 +804,10 @@ public class CopypastaRepositoryTest {
 			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(""));
 			assertEquals(6, copypastaRepository.count());
 		}
+	}
+
+	private String repeatString(char ch, int times) {
+		StringBuilder builder = new StringBuilder();
+		return builder.repeat(ch, times).toString();
 	}
 }

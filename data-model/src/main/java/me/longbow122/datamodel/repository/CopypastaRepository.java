@@ -24,7 +24,7 @@ public interface CopypastaRepository extends JpaRepository<Copypasta, String> {
 	List<Copypasta> findCopypastaByNameStartingWith(String name);
 
 	// ? JPA does not support delete query methods, need to write our own. JPA only supports find, read, query, count and get. Updates and Deletes will need to be handled ourselves.
-	//* Transactional and Modifying annotations are required if we are modifying the database in anyways.
+	//* Transactional and Modifying annotations are required if we are modifying the database in any way.
 	@Modifying
 	@Query("DELETE FROM Copypasta WHERE name = ?1")
 	int deleteCopypastaByNameNaturalId(String name);
@@ -45,39 +45,27 @@ public interface CopypastaRepository extends JpaRepository<Copypasta, String> {
 
 	@Transactional
 	default void updateCopypastaNameByName(String name, String newName) {
-		Optional<Copypasta> pasta = findCopypastaByName(name);
-		if (pasta.isEmpty()) {
-			throw new EntityNotFoundException("Copypasta with name: " + name + " does not exist");
-		}
-		Copypasta newPasta = pasta.get();
-		newPasta.setName(newName);
-		save(newPasta);
+		Copypasta pasta = findCopypastaByName(name).orElseThrow(() ->
+			new EntityNotFoundException("Copypasta with name: " + name + " does not exist"));
+		pasta.setName(newName);
+		save(pasta);
 	}
 
 	@Transactional
 	default void updateCopypastaDescriptionByName(String name, String newDescription) {
-		Optional<Copypasta> pasta = findCopypastaByName(name);
-		if (pasta.isEmpty()) {
-			throw new EntityNotFoundException("Copypasta with name: " + name + " does not exist!");
-		}
-		Copypasta newPasta = pasta.get();
-		newPasta.setDescription(newDescription);
-		save(newPasta);
+		Copypasta pasta = findCopypastaByName(name).orElseThrow(() ->
+			new EntityNotFoundException("Copypasta with name: " + name + " does not exist"));
+		pasta.setDescription(newDescription);
+		save(pasta);
 	}
 
-	//TODO NEED TO SEE IF WE CAN GET THE RIGHT EXCEPTION TO COME OUT, IDEALLY DATAINTEGRITYVIOLATION!
-
-	//TODO THE WAY OF USING SAVES IS IDEAL, BUT IS NOT WHAT WE ARE MEANT TO BE DOING IN THE REPOSITORY LAYER! WE NEED TO MOVE THIS LOGIC
-	// TO THE SERVICE LAYER, ALONG WITH THE TESTS
+	//TODO NEED TO SEE IF WE CAN GET THE RIGHT EXCEPTION TO COME OUT, IDEALLY DATAINTEGRITYVIOLATION! THIS DOES NOT COME OUT IF A CONSTRAINT IS VIOLATED IN THE SAVES
 
 	@Transactional
 	default void updateCopypastaMessageByName(String name, String newMessage) {
-		Optional<Copypasta> pasta = findCopypastaByName(name);
-		if (pasta.isEmpty()) {
-			throw new EntityNotFoundException("Copypasta with name: " + name + " does not exist!");
-		}
-		Copypasta newPasta = pasta.get();
-		newPasta.setMessage(newMessage);
-		save(newPasta);
+		Copypasta pasta = findCopypastaByName(name).orElseThrow(() ->
+			new EntityNotFoundException("Copypasta with name: " + name + " does not exist"));
+		pasta.setMessage(newMessage);
+		save(pasta);
 	}
 }
