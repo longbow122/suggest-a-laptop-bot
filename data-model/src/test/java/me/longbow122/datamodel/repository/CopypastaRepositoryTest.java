@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 })
 public class CopypastaRepositoryTest {
 
-	//TODO ALL OF THESE TESTS ARE NAMED QUITE BADLY, THEY SHOULD BE NAMED BETTER.
-
 	/*
 	* If a test is suffixed with "shouldPass", then we are testing expected behaviour. We are giving in some input, and checking to see
 	* whether we get expected output.
