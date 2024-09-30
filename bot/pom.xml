@@ -9,7 +9,7 @@
     </parent>
     <artifactId>suggest-a-laptop-bot-bot</artifactId>
     <name>suggest-a-laptop-bot-bot</name>
-    <description>Starter project for building JDA Discord app with Spring Boot</description>
+    <description>Project using JDA and Spring Boot to build the Bot layer of this application</description>
 
     <licenses>
         <license>
@@ -17,13 +17,6 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
-    <developers>
-        <developer>
-            <name>Ivan Rizkya Susanto</name>
-            <email>ivanzkyanto@outlook.com</email>
-        </developer>
-    </developers>
 
     <scm>
         <connection>scm:git:git://github.com/stackpan/jda-spring-quickstart.git</connection>
@@ -33,7 +26,7 @@
 
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
     </properties>
     <dependencies>
         <dependency>
