@@ -62,6 +62,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.14.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.codearte.catch-exception</groupId>
+            <artifactId>catch-exception</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>me.longbow122</groupId>
             <artifactId>suggest-a-laptop-bot-data-model</artifactId>
             <version>1.0.0</version>

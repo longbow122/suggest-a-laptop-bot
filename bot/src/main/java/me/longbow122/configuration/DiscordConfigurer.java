@@ -20,7 +20,8 @@ public class DiscordConfigurer {
 
     @Bean
     public JDA jda() throws InterruptedException {
-        JDA jda =  JDABuilder
+        //TODO THIS NEEDS TO BE AMENEDED AND ADDED ONCE WE HAVE GOT THE BOT TO A RUNNING STATE
+        /*JDA jda =  JDABuilder
                 .createDefault(discordConfigurationProperties.botToken())
                 .setActivity(Activity.listening("User command"))
                 .build();
@@ -30,7 +31,8 @@ public class DiscordConfigurer {
                 .extensionsBuilder(extensionRegister) // Don't remove this! This is necessary for registering your beans
                 .build(jda, "me.longbow122.command");
 
-        return jda;
+        return jda;*/
+        return null;
     }
 
 }
