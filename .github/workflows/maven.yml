@@ -31,6 +31,8 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install
+      #TODO MIGHT BE A MAVEN ISSUE WITH US NOT PICKINMG UP THE NESTED TEST CLASS, SEE IF WE CAN FORCE THE VERSION OF MAVEN
+      #TODO WHEN BUILDING, THAT MIGHT HELP PICK UP NESTED TEST CLASSES.
       # Maven Package achieves the same results, but does not install the packaged build into the local Mvn Repository.
       #run: mvn -B package --file pom.xml 
       

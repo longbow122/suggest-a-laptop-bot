@@ -13,19 +13,6 @@
     <version>1.0.0</version>
     <name>suggest-a-laptop-bot-data-model</name>
     <description>Data Model handling all CRUD logic needed within SaLBot within a library project</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -86,7 +73,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.11.0</version>
+            <version>5.14.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
