@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class CopypastaService {
 
@@ -28,6 +31,21 @@ public class CopypastaService {
 	@Transactional
 	public void deleteCopypasta(String name) {
 		copypastaRepository.deleteCopypastaByName(name);
+	}
+
+	@Transactional
+	public List<Copypasta> findAllCopypasta() {
+		return copypastaRepository.findAll();
+	}
+
+	@Transactional
+	public List<Copypasta> findAllCopypastaStartsWith(String name) {
+		return copypastaRepository.findCopypastaByNameStartingWith(name);
+	}
+
+	@Transactional
+	public Optional<Copypasta> findCopypastaByName(String name) {
+		return copypastaRepository.findCopypastaByName(name);
 	}
 
 	//TODO NEED TO SEE IF WE CAN GET THE RIGHT EXCEPTION TO COME OUT, IDEALLY DATAINTEGRITYVIOLATION! THIS DOES NOT COME OUT IF A CONSTRAINT IS VIOLATED IN THE SAVES

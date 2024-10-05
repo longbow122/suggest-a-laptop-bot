@@ -1,6 +1,7 @@
 package me.longbow122.discord;
 
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
+import me.longbow122.service.CopypastaService;
 import me.longbow122.service.ExampleService;
 import lombok.Setter;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +23,10 @@ public class ExtensionRegister implements Consumer<ExtensionsBuilder>, Applicati
      */
     @Override
     public void accept(ExtensionsBuilder extensionsBuilder) {
+
+        //TODO OLD COMMAND AND THE OLD SERVICES NEED TO BE REMOVED WHEN BOT IS NOW IN A RUNNABLE STATE.
         extensionsBuilder
-                .registerConstructorParameter(ExampleService.class, t -> applicationContext.getBean(ExampleService.class));
+                .registerConstructorParameter(ExampleService.class, t -> applicationContext.getBean(ExampleService.class))
+                .registerConstructorParameter(CopypastaService.class, t -> applicationContext.getBean(CopypastaService.class));
     }
 }

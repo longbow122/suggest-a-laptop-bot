@@ -11,6 +11,9 @@ import jakarta.validation.constraints.Size;
 import java.util.Set;
 
 public record CopypastaDTO(
+
+	//TODO WE MUST HAVE IT SO THAT YOU CANNOT HAVE NUMBERS OR SPACES INSIDE THE NAME AT ALL!
+	// ! Need to fix this constraint ASAP since this will break JDA and the Discord API!
 	@NotBlank(message = "Name cannot be blank")
 	@NotNull(message = "Name cannot be null")
 	@Size(min = 1, max = 32, message = "Name must be between 1 and 32 characters")
