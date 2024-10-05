@@ -83,6 +83,7 @@
 
     <build>
         <plugins>
+            <!-- Overriding plugin versions manually for Maven plugins to ensure that we can run our JUnit tests properly. -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

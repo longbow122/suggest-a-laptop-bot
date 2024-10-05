@@ -21,11 +21,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-//TODO GITHUB ACTIONS IS NOT PICKING UP, AND RUNNING THIS TEST. NEED TO FIND OUT WHY ASAP!!!
-// MANAGED TO PICK UP REPOSITORY TESTS JUST FINE, SO WHY NOT THIS ONE?
-
-//TODO NEED TO ADD BACK NESTED TEST CLASSES ONCE WE FIND A NEED TO ADD FURTHER NESTED TEST CLASSES
-
 @SpringBootTest
 public class CopypastaServiceTest {
 

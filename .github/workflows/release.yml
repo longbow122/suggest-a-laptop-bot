@@ -15,8 +15,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-        #TODO GOING TO NEED TO CARRY OVER ANY CHANGES WE MAKE TO ENSURE THAT TEST CLASSES ARE PICKED UP BY MAVEN TO HERE
-        #TODO SINCE THIS USES THE SAME STUFF.
       - name: Build with Maven
         run: mvn clean install
       #TODO NEED TO FIND A GOOD WAY OF GETTING THE FILEPATHS, SINCE OUR VERSION NUMBERING WILL BE BUMPED IN NEW VERSIONS.
