@@ -6,6 +6,7 @@ import me.longbow122.datamodel.repository.entities.Copypasta;
 import me.longbow122.discord.ExtensionRegister;
 import lombok.RequiredArgsConstructor;
 import me.longbow122.listener.CopypastaAutocompleteListener;
+import me.longbow122.listener.CopypastaModalListener;
 import me.longbow122.listener.SlashCopypastaCommandListener;
 import me.longbow122.service.CopypastaService;
 import net.dv8tion.jda.api.JDA;
@@ -40,6 +41,7 @@ public class DiscordConfigurer {
                 .setActivity(Activity.listening("User command"))
                 .addEventListeners(new SlashCopypastaCommandListener(copypastaService))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
+                .addEventListeners(new CopypastaModalListener(copypastaService))
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();

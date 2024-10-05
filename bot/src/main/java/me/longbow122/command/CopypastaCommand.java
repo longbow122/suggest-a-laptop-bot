@@ -75,7 +75,7 @@ public class CopypastaCommand extends ApplicationCommand {
 		} catch (EntityNotFoundException e) {
 			event.reply("Looks like a command with that name does NOT exist. Try updating a copypasta that exists.").setEphemeral(true).queue();
 		} catch (DataIntegrityViolationException | TransactionSystemException e) {
-			event.reply("The field you tried updating did not adhere to the constraints of Copypastas! \n Names must be between 1-32 characters, with no numbers and no whitespaces and **unique**. \n Descriptions must be between 1-100 characters. \n Messages must be between 1-2000 characters.").setEphemeral(true).queue();
+			event.reply("The field you tried updating did not adhere to the constraints of Copypastas! \n Names must be between 1-32 lowercase characters, with no numbers and no whitespaces and **unique**. \n Descriptions must be between 1-100 characters. \n Messages must be between 1-2000 characters.").setEphemeral(true).queue();
 		}
 	}
 }
