@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.4.0
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          check-latest: 'true'
+          cache: maven
         #TODO GOING TO NEED TO CARRY OVER ANY CHANGES WE MAKE TO ENSURE THAT TEST CLASSES ARE PICKED UP BY MAVEN TO HERE
         #TODO SINCE THIS USES THE SAME STUFF.
       - name: Build with Maven
