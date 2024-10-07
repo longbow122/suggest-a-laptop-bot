@@ -5,7 +5,7 @@ import me.longbow122.datamodel.repository.CopypastaRepository;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import me.longbow122.dto.CopypastaDTO;
 import me.longbow122.dto.mapper.CopypastaMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@ComponentScan(basePackages = "me.longbow122.datamodel")
 public class CopypastaService {
 
-	@Autowired
-	private CopypastaRepository copypastaRepository;
+	private final CopypastaRepository copypastaRepository;
+
+	//@Autowired
+	public CopypastaService(CopypastaRepository copypastaRepository) {
+		this.copypastaRepository = copypastaRepository;
+	}
 
 	//TODO DO WE NEED TO BE TESTING THESE METHODS? I THINK WE SHOULD, BUT IF WE DID, WE WOULD BE MOCKING THE CORE OF IT
 	// MAKING THE TEST EFFECTIVELY USELESS, SINCE THE SERVICE IS JUST MIMICKING REPOSITORY BEHAVIOUR ELSEWHERE.

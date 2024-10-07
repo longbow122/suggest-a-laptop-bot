@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = {CopypastaService.class})
 public class CopypastaServiceTest {
 
 	//* We are mocking the repository so that we can test the service layer without having to test the repository layer.
