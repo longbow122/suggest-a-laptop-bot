@@ -3,9 +3,9 @@ package me.longbow122.command;
 import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandScope;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import me.longbow122.service.CopypastaService;
@@ -39,7 +39,7 @@ public class CopypastaCommand extends ApplicationCommand {
 	}
 
 	@JDASlashCommand(name = "copypasta", description = "Remove a copypasta", subcommand = "remove")
-	public void copypastaRemove(GlobalSlashEvent event, @TextOption(name = "name") String copypastaName) {
+	public void copypastaRemove(GlobalSlashEvent event, @AppOption(name = "name", description = "The name of the copypasta") String copypastaName) {
 		//* This handler will deal with the removal of Copypastas
 		try {
 			copypastaService.deleteCopypasta(copypastaName);
@@ -49,7 +49,7 @@ public class CopypastaCommand extends ApplicationCommand {
 	}
 
 	@JDASlashCommand(name = "copypasta", description = "Update a copypasta", subcommand = "update")
-	public void copypastaUpdate(GlobalSlashEvent event, @TextOption(name = "name") String copypastaName, @TextOption(name = "field") String fieldEntered, @TextOption(name = "value") String valueEntered) {
+	public void copypastaUpdate(GlobalSlashEvent event, @AppOption(name = "name", description = "The name of the copypasta") String copypastaName, @AppOption(name = "field", description = "The field you are trying to modify. ('Name' 'Description', 'Message')") String fieldEntered, @AppOption(name = "value", description = "The new value of the field you are trying to modify") String valueEntered) {
 		//* This handler will deal with the updating of Copypastas
 		List<String> fieldVals = Arrays.asList("name", "description", "message");
 		if(!(fieldVals.contains(fieldEntered))) {

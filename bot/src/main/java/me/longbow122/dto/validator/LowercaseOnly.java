@@ -1,6 +1,7 @@
 package me.longbow122.dto.validator;
 
 import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
@@ -10,4 +11,8 @@ import java.lang.annotation.*;
 @Documented
 public @interface LowercaseOnly {
 	String message() default "Must contain only lowercase characters (no spaces)!";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }
