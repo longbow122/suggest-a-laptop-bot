@@ -1,6 +1,7 @@
 package me.longbow122.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import me.longbow122.datamodel.repository.CopypastaRepository;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import me.longbow122.dto.CopypastaDTO;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @ComponentScan(basePackages = "me.longbow122.datamodel")
 public class CopypastaService {
@@ -30,7 +32,8 @@ public class CopypastaService {
 
 	@Transactional
 	public Copypasta createCopypasta(CopypastaDTO copypastaDTO) {
-		return copypastaRepository.save(CopypastaMapper.toCopypasta(copypastaDTO));
+		Copypasta saved = copypastaRepository.save(CopypastaMapper.toCopypasta(copypastaDTO));
+		return saved;
 	}
 
 	@Transactional
