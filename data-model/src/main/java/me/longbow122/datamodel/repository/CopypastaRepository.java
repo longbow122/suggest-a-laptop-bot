@@ -14,11 +14,6 @@ import java.util.Optional;
 @Repository
 public interface CopypastaRepository extends JpaRepository<Copypasta, String> {
 
-	//TODO OUR TEST SEEMS TO BE WORKING PROPERLY USING IN-MEMORY WITH PROPERTIES
-	// NEED TO ENSURE WE CAN USE FILE-BASED FOR OURSELVES SOMEHOW, OR WORST-CASE, GCP SQL
-	// NEED TO ENSURE THAT THIS IS USED IN A REAL USE-CASE IN PRODUCTION.
-	// THIS NEEDS TO BE TESTED WITH THE INTRODUCTION OF THE BOT MODULE
-
 	Optional<Copypasta> findCopypastaByName(String name);
 
 	List<Copypasta> findCopypastaByNameStartingWith(String name);

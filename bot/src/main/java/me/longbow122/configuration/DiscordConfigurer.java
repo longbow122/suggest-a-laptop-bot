@@ -32,8 +32,6 @@ public class DiscordConfigurer {
         this.copypastaService = copypastaService;
     }
 
-    //TODO NEED TO FIND A WAY TO REMOVE THE RELIANCE OF THE BOT TOKEN ON UNIT TESTING, OR JUST FIND A WAY TO MOVE THE BOT TOKEN TO OUR OWN CONFIGURATION, SO WE DON'T REQUIRE IT TO RUN!
-
 
     @Bean
     public JDA jda() throws InterruptedException {
