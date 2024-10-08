@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = LowercaseOnlyValidator.class)
 @Documented
 public @interface LowercaseOnly {
-	String message() default "Must contain only lowercase characters (no spaces)!";
+	String message() default "Names must contain only lowercase characters (no spaces)!";
 
 	Class<?>[] groups() default {};
 

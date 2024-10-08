@@ -72,7 +72,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				String valueEntered = event.getOption("value").getAsString();
 				List<String> fieldVals = Arrays.asList("name", "description", "message");
 				if (!(fieldVals.contains(fieldEntered))) {
-					event.reply("Looks like a field with that name does NOT exist. Try updating a copypasta that exists.").setEphemeral(true).queue();
+					event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
 					return;
 				}
 				try {
