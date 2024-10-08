@@ -7,6 +7,7 @@ public class LowercaseOnlyValidator implements ConstraintValidator<LowercaseOnly
 
 	@Override
 	public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+		if (s == null) return false;
 		for (char i : s.toCharArray()) {
 			if(!(Character.isLowerCase(i)) || !(Character.isAlphabetic(i)) || i == ' ') return false;
 		}

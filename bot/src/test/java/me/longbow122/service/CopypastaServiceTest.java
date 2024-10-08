@@ -24,6 +24,18 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {CopypastaService.class})
 public class CopypastaServiceTest {
 
+	/*
+	 * If a test is suffixed with "shouldPass", then we are testing expected behaviour. We are giving in some input, and checking to see
+	 * whether we get expected output.
+	 *
+	 * If a test is suffixed with "shouldFail", then we are testing unexpected behaviour. We are giving in some input, and checking to see
+	 * if it fails in the way we intend for it to fail. In this event, we usually expect an exception of some sort.
+	 *
+	 * All tests written here are expected to pass, but their suffixing will tell you what the criteria for the test passing is.
+	 *
+	 * There will also be a comment with each test case describing what we are testing here.
+	 */
+
 	//* We are mocking the repository so that we can test the service layer without having to test the repository layer.
 	//* We do not have to test the repository layer since we are testing that it works elsewhere.
 	@MockBean
