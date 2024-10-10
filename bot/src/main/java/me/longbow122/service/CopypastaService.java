@@ -20,7 +20,6 @@ public class CopypastaService {
 
 	private final CopypastaRepository copypastaRepository;
 
-	//@Autowired
 	public CopypastaService(CopypastaRepository copypastaRepository) {
 		this.copypastaRepository = copypastaRepository;
 	}
@@ -32,8 +31,7 @@ public class CopypastaService {
 
 	@Transactional
 	public Copypasta createCopypasta(CopypastaDTO copypastaDTO) {
-		Copypasta saved = copypastaRepository.save(CopypastaMapper.toCopypasta(copypastaDTO));
-		return saved;
+		return copypastaRepository.save(CopypastaMapper.toCopypasta(copypastaDTO));
 	}
 
 	@Transactional

@@ -1,5 +1,6 @@
 package me.longbow122;
 
+import lombok.extern.slf4j.Slf4j;
 import me.longbow122.configuration.DiscordConfigurer;
 import me.longbow122.configuration.properties.DiscordConfigurationProperties;
 import me.longbow122.datamodel.repository.CopypastaRepository;
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 
+@Slf4j
 @SpringBootApplication
 @ConfigurationPropertiesScan("me.longbow122.configuration.properties")
 @ComponentScan(basePackages = {
@@ -46,5 +48,7 @@ public class JdaSpringQuickstartApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         discordConfigurer.jda();
+        //TODO DEBUG NEEDS TO GO
+        log.info("We should see this if we have the Bot running");
     }
 }
