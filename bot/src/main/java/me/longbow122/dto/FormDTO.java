@@ -4,9 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import me.longbow122.dto.validator.ListsMustHaveSameLength;
 
 import java.util.List;
 
+@ListsMustHaveSameLength(firstList = "questions", secondList = "answers")
 public record FormDTO(
 	@Getter
 	@NotNull(message = "Username cannot be null!")
