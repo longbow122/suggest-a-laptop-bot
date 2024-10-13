@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 	"me.longbow122.exception.exceptions"
 })
 public class FormController {
-	//TODO HOW DO WE MOCK AND TEST THIS? SHOULD WE FIND A WAY TO PROVIDE A RESPONSE ENTITY?
 
 	private final FormService formService;
 
@@ -26,8 +25,6 @@ public class FormController {
 	public FormController(FormService formService) {
 		this.formService = formService;
 	}
-
-	//TODO WE NEED TO WRITE TESTS FOR THIS ENDPOINT AND THE FORM DTO VALIDATION!
 
 	@PostMapping("/form")
 	public ResponseEntity<String> postFormAnswers(@RequestBody @Valid FormDTO form) {

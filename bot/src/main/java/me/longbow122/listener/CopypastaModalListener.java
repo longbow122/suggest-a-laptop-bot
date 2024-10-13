@@ -20,9 +20,11 @@ public class CopypastaModalListener extends ListenerAdapter {
 
 	private final CopypastaService copypastaService;
 
-	//TODO UNSURE WHY, BUT WHENEVER WE PASS INVALID INPUT, WE DO NOT OFTEN GET AN EXCEPTION....
-	// UNSURE IF IT IS SOMETHING TO DO WITH OUR MODAL DEFINITION WITHIN THE COMMAND, BUT WE DO NOT GET AN EXCEPTION AND IT IS NOT LET THROUGH... STRANGE.
-	// IT'S GOOD, BUT STILL STRANGE. PROBABLY ALSO PART OF THE REASON WE CANNOT CLOSE THE MODAL WHEN WE FAIL TO GIVE A CERTAIN TYPE OF VALID INPUT.
+	/*
+	* We do not get exceptions or much control over invalid input at the Modal layer, so a lot of this validation does not end up triggering.
+	* Good to have either way, in my opinion.
+	* Our definition of the modal will ensure that we validate as much input where possible, making sure valid input is sent through.
+	 */
 
 	@Override
 	public void onModalInteraction(@NotNull ModalInteractionEvent event) {

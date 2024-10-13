@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.util.List;
 
@@ -39,10 +40,10 @@ public class DiscordConfigurer {
         this.copypastaService = copypastaService;
     }
 
-
     @Bean
+    @Profile("!test")
     public JDA jda() throws InterruptedException {
-        JDA jda = JDABuilder
+        JDA jdaBuild = JDABuilder
                 .createDefault(discordConfigurationProperties.botToken())
                 .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setActivity(Activity.customStatus("Use /form for help!"))
@@ -52,7 +53,7 @@ public class DiscordConfigurer {
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();
-        CommandListUpdateAction commands = jda.updateCommands();
+        CommandListUpdateAction commands = jdaBuild.updateCommands();
         pastas.forEach(copypasta -> commands.addCommands(Commands.slash(copypasta.getName(), copypasta.getDescription())
             .setGuildOnly(true)));
 
@@ -66,15 +67,15 @@ public class DiscordConfigurer {
                 .addOption(OptionType.STRING, "field", "The field to update. (Name, Description, Message). REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "value", "The new value of the field. REQUIRED.", true)));
         commands.queue();
-        jda.awaitReady();
-        this.jda = jda;
+        jdaBuild.awaitReady();
+        this.jda = jdaBuild;
         //* Some good debug to have when starting up. Decided to keep this.
-        log.info(jda.toString());
+        log.info(jdaBuild.toString());
         pastas.forEach(pasta -> {
 	        log.info("name: {}", pasta.getName());
 	        log.info("message: {}", pasta.getMessage());
         });
         if(pastas.isEmpty()) log.info("Pastas was empty");
-        return jda;
+        return jdaBuild;
     }
 }

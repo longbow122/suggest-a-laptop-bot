@@ -24,11 +24,6 @@ public class CopypastaService {
 		this.copypastaRepository = copypastaRepository;
 	}
 
-	//TODO DO WE NEED TO BE TESTING THESE METHODS? I THINK WE SHOULD, BUT IF WE DID, WE WOULD BE MOCKING THE CORE OF IT
-	// MAKING THE TEST EFFECTIVELY USELESS, SINCE THE SERVICE IS JUST MIMICKING REPOSITORY BEHAVIOUR ELSEWHERE.
-	// UNSURE IF THERE IS A NEED TO TEST, CAN JUDGE THROUGH OTHER CHECKS FOR CODE COVERAGE.
-
-
 	@Transactional
 	public Copypasta createCopypasta(CopypastaDTO copypastaDTO) {
 		return copypastaRepository.save(CopypastaMapper.toCopypasta(copypastaDTO));
@@ -53,8 +48,6 @@ public class CopypastaService {
 	public Optional<Copypasta> findCopypastaByName(String name) {
 		return copypastaRepository.findCopypastaByName(name);
 	}
-
-	//TODO NEED TO SEE IF WE CAN GET THE RIGHT EXCEPTION TO COME OUT, IDEALLY DATAINTEGRITYVIOLATION! THIS DOES NOT COME OUT IF A CONSTRAINT IS VIOLATED IN THE SAVES
 
 	public void updateCopypastaName(String oldName, String newName) {
 		Copypasta pasta = copypastaRepository.findCopypastaByName(oldName).orElseThrow(() ->
