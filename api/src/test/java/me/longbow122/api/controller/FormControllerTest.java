@@ -1,8 +1,8 @@
 package me.longbow122.api.controller;
 
-import me.longbow122.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.dto.FormDTO;
-import me.longbow122.service.FormService;
+import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
+import me.longbow122.bot.dto.FormDTO;
+import me.longbow122.bot.service.FormService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
