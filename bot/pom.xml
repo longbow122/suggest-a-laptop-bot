@@ -27,7 +27,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <start-class>me.longbow122.JdaSpringQuickstartApplication</start-class>
+        <start-class>me.longbow122.bot.JdaSpringQuickstartApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -140,7 +140,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>me.longbow122.JdaSpringQuickstartApplication</mainClass>
+                            <mainClass>me.longbow122.bot.JdaSpringQuickstartApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
