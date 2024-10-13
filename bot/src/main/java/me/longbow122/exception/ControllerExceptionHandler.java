@@ -6,8 +6,12 @@ import me.longbow122.exception.exceptions.UserNotFoundException;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ControllerAdvice(basePackages = {
 	"me.longbow122.api.controller"
@@ -31,5 +35,14 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(GuildNotFoundException.class)
 	public ResponseEntity<String> handleGuildNotFoundException(GuildNotFoundException exception) {
 		return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+		//* Get all the violations that might have been caught against the API, so we can check against one of them in testing.
+		List<String> errorMapping = new ArrayList<>();
+		exception.getBindingResult().getAllErrors().forEach(error ->
+			errorMapping.add(error.getDefaultMessage()));
+		return new ResponseEntity<>(errorMapping, HttpStatus.BAD_REQUEST);
 	}
 }
