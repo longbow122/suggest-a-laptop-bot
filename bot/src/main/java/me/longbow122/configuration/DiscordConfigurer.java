@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ public class DiscordConfigurer {
     public JDA jda() throws InterruptedException {
         JDA jda = JDABuilder
                 .createDefault(discordConfigurationProperties.botToken())
+                .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setActivity(Activity.customStatus("Use /form for help!"))
                 .addEventListeners(new SlashCopypastaCommandListener(copypastaService))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
@@ -66,7 +68,7 @@ public class DiscordConfigurer {
         commands.queue();
         jda.awaitReady();
         this.jda = jda;
-        //TODO THE BELOW IS DEBUG AND NEEDS TO BE REMOVED WHEN DONE!
+        //* Some good debug to have when starting up. Decided to keep this.
         log.info(jda.toString());
         pastas.forEach(pasta -> {
 	        log.info("name: {}", pasta.getName());

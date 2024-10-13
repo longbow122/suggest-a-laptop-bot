@@ -4,6 +4,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "form")
 public record FormConfigurationProperties(
-	long guildId,
-	long formChannelId) {
+	long guildId) {
 }

@@ -1,0 +1,35 @@
+package me.longbow122.exception;
+
+import me.longbow122.exception.exceptions.ChannelNotFoundException;
+import me.longbow122.exception.exceptions.GuildNotFoundException;
+import me.longbow122.exception.exceptions.UserNotFoundException;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+@ControllerAdvice(basePackages = {
+	"me.longbow122.api.controller"
+})
+@ComponentScan(basePackages = {
+	"me.longbow122.service",
+	"me.longbow122.api.controller"
+})
+public class ControllerExceptionHandler {
+
+	@ExceptionHandler(ChannelNotFoundException.class)
+	public ResponseEntity<String> handleChannelNotFoundException(ChannelNotFoundException exception) {
+		return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exception) {
+		return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(GuildNotFoundException.class)
+	public ResponseEntity<String> handleGuildNotFoundException(GuildNotFoundException exception) {
+		return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+}

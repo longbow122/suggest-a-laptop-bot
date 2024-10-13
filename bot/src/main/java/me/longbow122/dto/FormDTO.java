@@ -13,6 +13,9 @@ public record FormDTO(
 	@NotBlank(message = "Username cannot be blank!")
 	String poster,
 	@Getter
+	@NotNull(message = "Channel ID cannot be null!")
+	long channelSendID,
+	@Getter
 	@NotNull(message = "Questions cannot be null!")
 	@NotEmpty(message = "Questions cannot be empty!")
 	List<String> questions,

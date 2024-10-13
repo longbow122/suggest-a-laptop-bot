@@ -18,7 +18,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {
     "me.longbow122.datamodel.repository",
     "me.longbow122.service",
-    "me.longbow122.configuration"
+    "me.longbow122.configuration",
+    "me.longbow122.exception"
 })
 public class JdaSpringQuickstartApplication implements CommandLineRunner {
 
@@ -42,13 +43,8 @@ public class JdaSpringQuickstartApplication implements CommandLineRunner {
         SpringApplication.run(JdaSpringQuickstartApplication.class, args);
     }
 
-    //TODO THIS IS A MINOR ISSUE, BUT WE CANNOT SEEM TO RUN THINGS THROUGH THE IDE. NEED TO LOOK INTO WHY THIS IS.
-    //? This is a minor issue, since we can build it and run things as intended easily.
-    //? Runs fine in production with a real environment, but does not run as intended on the IDE, unsure why.
     @Override
     public void run(String... args) throws Exception {
         discordConfigurer.jda();
-        //TODO DEBUG NEEDS TO GO
-        log.info("We should see this if we have the Bot running");
     }
 }
