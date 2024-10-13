@@ -1,5 +1,6 @@
 package me.longbow122;
 
+import lombok.extern.slf4j.Slf4j;
 import me.longbow122.configuration.DiscordConfigurer;
 import me.longbow122.configuration.properties.DiscordConfigurationProperties;
 import me.longbow122.datamodel.repository.CopypastaRepository;
@@ -11,12 +12,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 
+@Slf4j
 @SpringBootApplication
 @ConfigurationPropertiesScan("me.longbow122.configuration.properties")
 @ComponentScan(basePackages = {
     "me.longbow122.datamodel.repository",
     "me.longbow122.service",
-    "me.longbow122.configuration"
+    "me.longbow122.configuration",
+    "me.longbow122.exception"
 })
 public class JdaSpringQuickstartApplication implements CommandLineRunner {
 
@@ -40,9 +43,6 @@ public class JdaSpringQuickstartApplication implements CommandLineRunner {
         SpringApplication.run(JdaSpringQuickstartApplication.class, args);
     }
 
-    //TODO THIS IS A MINOR ISSUE, BUT WE CANNOT SEEM TO RUN THINGS THROUGH THE IDE. NEED TO LOOK INTO WHY THIS IS.
-    //? This is a minor issue, since we can build it and run things as intended easily.
-    //? Runs fine in production with a real environment, but does not run as intended on the IDE, unsure why.
     @Override
     public void run(String... args) throws Exception {
         discordConfigurer.jda();

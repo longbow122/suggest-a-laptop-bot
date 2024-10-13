@@ -5,9 +5,6 @@ import me.longbow122.dto.CopypastaDTO;
 
 public class CopypastaMapper {
 
-	//TODO SHOULD THIS MAPPER CLASS CONTAIN STATIC METHODS? SEEMS ODD TO INCLUDE AND USE STATIC METHODS HERE?
-	// WE SHOULD LOOK INTO THIS?
-
 	private CopypastaMapper() {
 		throw new IllegalStateException("This is a mapper class!");
 	}

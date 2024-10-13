@@ -1,4 +1,8 @@
 HELP.md
+data.mv.db
+*.h2.db
+*.mv.db
+dependency-reduced-pom.xml
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
