@@ -2,8 +2,11 @@ package me.longbow122.bot.listener;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import me.longbow122.bot.service.CopypastaService;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -22,6 +25,8 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 
 	private final CopypastaService copypastaService;
 
+	private final DiscordConfigurationProperties discordConfigurationProperties;
+
 
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -38,8 +43,20 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			event.reply(copypastaService.findCopypastaByName(event.getName()).get().getMessage()).setEphemeral(false).queue();
 			return;
 		}
-
+		Member user = event.getGuild().getMemberById(event.getUser().getIdLong());
+		if (user == null) {
+			event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS. WE COULD NOT FIND A USER!").setEphemeral(false).queue();
+			return;
+		}
+		Role copypastaRole = event.getGuild().getRoleById(discordConfigurationProperties.copypastaRoleID());
+		Role adminRole = event.getGuild().getRoleById(discordConfigurationProperties.adminRoleID());
+		//* You need to have the copypasta role to be able to work with copypasta commands.
+		if (!(user.getRoles().contains(copypastaRole))) {
+			event.reply("You do not have permissions to use that command! You need " + copypastaRole.getName()).setEphemeral(true).queue();
+			return;
+		}
 		//* The "admin" portion of the command handling. This is where copypasta adding, updating and removal is handled.
+		//* Admin commands require the configured "admin" role.
 		switch (event.getFullCommandName()) {
 			//* Deal with the addition of copypastas here.
 			case "copypasta add": {
@@ -57,6 +74,10 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			//* Deal with the removal of copypastas here.
 			case "copypasta remove": {
 				try {
+					if (!(user.getRoles().contains(adminRole))) {
+						event.reply("You do not have permission to use that command! You need " + adminRole.getName()).setEphemeral(true).queue();
+						return;
+					}
 					copypastaService.deleteCopypasta(event.getOption("name").getAsString());
 					event.reply("Successfully deleted copypasta with name: " + event.getOption("name").getAsString()).setEphemeral(false).queue();
 					return;
@@ -67,6 +88,10 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			}
 			//* Deal with the updating of copypastas here.
 			case "copypasta update": {
+				if (!(user.getRoles().contains(adminRole))) {
+					event.reply("You do not have permission to use that command! You need " + adminRole.getName()).setEphemeral(true).queue();
+					return;
+				}
 				String nameEntered = event.getOption("name").getAsString();
 				String fieldEntered = event.getOption("field").getAsString();
 				String valueEntered = event.getOption("value").getAsString();
@@ -88,6 +113,10 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 						case "message": {
 							copypastaService.updateCopypastaMessage(nameEntered, valueEntered);
 							break;
+						}
+						default: {
+							event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
+							return;
 						}
 					}
 					event.reply("Copypasta successfully updated! \n Name: **" + nameEntered + "** \n Field: **" + fieldEntered + "** \n Value: **" + valueEntered + "**").setEphemeral(true).queue();

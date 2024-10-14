@@ -47,7 +47,7 @@ public class DiscordConfigurer {
                 .createDefault(discordConfigurationProperties.botToken())
                 .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setActivity(Activity.customStatus("Use /form for help!"))
-                .addEventListeners(new SlashCopypastaCommandListener(copypastaService))
+                .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
                 .addEventListeners(new CopypastaModalListener(copypastaService))
                 .build();
