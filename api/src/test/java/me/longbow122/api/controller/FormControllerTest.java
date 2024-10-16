@@ -29,7 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(FormController.class)
 @OverrideAutoConfiguration(enabled = true)
 @ActiveProfiles(profiles = "test")
-@MockBeans({@MockBean(DiscordConfigurationProperties.class)})
+@MockBeans({
+	@MockBean(DiscordConfigurationProperties.class)
+})
 class FormControllerTest {
 
 	/*

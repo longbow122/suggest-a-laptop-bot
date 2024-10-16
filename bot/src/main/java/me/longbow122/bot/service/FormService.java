@@ -44,6 +44,7 @@ public class FormService {
 		}
 		//* Thanks to Discord and globally unique usernames, this should ideally be of size 1 every time.
 		//* As such, we always get the first one. We don't have access to user IDs in this case, not without discord logins.
+		//* Worth noting that we are only checking cached members here, so need to ensure that we are caching members properly.
 		List<Member> found = guild.getMembersByName(form.poster(), false);
 		if (found.isEmpty()) {
 			throw new UserNotFoundException("Member not found! They must not be in the discord server!");
