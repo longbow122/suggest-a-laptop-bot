@@ -43,6 +43,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			event.reply(copypastaService.findCopypastaByName(event.getName()).get().getMessage()).setEphemeral(false).queue();
 			return;
 		}
+		//* Worth noting that we are only checking cached members here, so need to ensure that members are cached properly when checking.
 		Member user = event.getGuild().getMemberById(event.getUser().getIdLong());
 		if (user == null) {
 			event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS. WE COULD NOT FIND A USER!").setEphemeral(false).queue();
