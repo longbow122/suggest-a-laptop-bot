@@ -37,7 +37,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 		if (pastas.stream().anyMatch(pasta -> pasta.getName().equals(event.getName()))) {
 			Optional<Copypasta> found = copypastaService.findCopypastaByName(event.getName());
 			if (found.isEmpty()) {
-				event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS, PLEASE CONTACT AN ADMINISTRATOR!").setEphemeral(false).queue();
+				event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS, THE FOUND COPYPASTA WAS EMPTY! PLEASE CONTACT AN ADMINISTRATOR!").setEphemeral(false).queue();
 				return;
 			}
 			event.reply(copypastaService.findCopypastaByName(event.getName()).get().getMessage()).setEphemeral(false).queue();
@@ -129,7 +129,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				return;
 			}
 			default: {
-				event.reply("SOMETHING HAS GONE WRONG WITH THE COPYPASTA COMMANDS. PLEASE CONTACT AN ADMIN ASAP.").setEphemeral(false).queue();
+				event.reply("THE COPYPASTA YOU TRIED SENDING HAS EITHER BEEN DELETED OR DOES NOT EXIST. PLEASE CONTACT AN ADMIN IF YOU BELIEVE THAT THIS IS IN ERROR.").setEphemeral(false).queue();
 			}
 		}
 	}
