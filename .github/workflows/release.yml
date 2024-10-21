@@ -1,10 +1,11 @@
-name: release.yml
+name: Release Build
 on:
   push:
     branches: [ "main" ]
 
 jobs:
   release_build:
+    name: Release Build
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +21,7 @@ jobs:
       #TODO NEED TO FIND A GOOD WAY OF GETTING THE FILEPATHS, SINCE OUR VERSION NUMBERING WILL BE BUMPED IN NEW VERSIONS.
       #TODO WE COULD LIKELY USE THIS ACTION TO HANDLE PUSHING TO RELEASES. ONLY ISSUE IS GETTING THE RIGHT VERSION NAMES FROM THE BUMPED VERSIONS.
       #TODO NEED TO FIND A WAY TO OUTPUT THE RIGHT BUMPED VERSIONS FOR EACH FILE, ALONG WITH HANDLE BUMPING.
-      - name: Upload Assets
+      - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         #TODO WOULD BE NICE IF WE COULD GATE THE UPLOADING OF ASSETS AND THE CREATION OF A RELEASE BEHIND SOME FORM OF CONDITION. NEED TO SEE HOW THIS CAN BE DONE.
         with:

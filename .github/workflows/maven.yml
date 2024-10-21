@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   build:
+    name: Build with Maven and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +30,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
+    - name: Build with Maven and Test
       run: mvn clean install
       # Maven Package achieves the same results, but does not install the packaged build into the local Mvn Repository.
       #run: mvn -B package --file pom.xml 
