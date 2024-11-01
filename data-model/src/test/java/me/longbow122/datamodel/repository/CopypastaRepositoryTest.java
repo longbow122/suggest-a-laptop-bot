@@ -1,5 +1,6 @@
 package me.longbow122.datamodel.repository;
 
+import jakarta.validation.ConstraintViolationException;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.transaction.TransactionSystemException;
+import org.springframework.orm.jpa.JpaSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -97,7 +98,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("", "", "");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -107,7 +108,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(null, null, null);
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(JpaSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -117,7 +118,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("", "description", "this is a message");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -137,7 +138,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(null, "description", "this is a message");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(JpaSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -147,7 +148,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "", "this is a message");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -167,7 +168,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", null, "this is a message");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -177,7 +178,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "description", "");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -197,7 +198,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "description", null);
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -207,7 +208,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(" ", " ",  " ");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -217,7 +218,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(" ", "description", "this is a message");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -227,7 +228,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", " ", "this is a message");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -237,7 +238,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "description", " ");
-			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 	}
