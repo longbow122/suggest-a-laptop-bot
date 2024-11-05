@@ -1,6 +1,5 @@
 package me.longbow122.datamodel.repository;
 
-import jakarta.validation.ConstraintViolationException;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,14 +70,17 @@ public class CopypastaRepositoryTest {
 		}
 
 		@Test
-		void testPrimaryKeyCollisionInsertion_shouldFail() {
-			// ? Test that inserting a record with the same primary key as an existing record does not work.
+		void testPrimaryKeyCollisionInsertion_shouldPass() {
+			// ? Test that inserting a record with the same primary key as an existing record works, and overrides/upserts.
+
+			// * Worth noting that we are not failing the transaction here since upsert behaviour is allowed at the repository layer.
+			// * Service layers will prevent primary key collisions. As such, no assertions on throwing exceptions here.
 			Copypasta pasta = new Copypasta("testName", "testDescription", "This is a message");
 			Copypasta pasta2 = new Copypasta("testName", "testDesc", "This is another message");
 			assertEquals(0, copypastaRepository.count());
 			copypastaRepository.save(pasta);
 			assertEquals(1, copypastaRepository.count());
-			assertThrows(DataIntegrityViolationException.class, () -> copypastaRepository.save(pasta2));
+			copypastaRepository.save(pasta2);
 			assertEquals(1, copypastaRepository.count());
 		}
 
@@ -98,7 +100,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("", "", "");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -118,7 +120,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("", "description", "this is a message");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -148,7 +150,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "", "this is a message");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -168,7 +170,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", null, "this is a message");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -178,7 +180,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "description", "");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -198,7 +200,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "description", null);
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -208,7 +210,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(" ", " ",  " ");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -218,7 +220,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta(" ", "description", "this is a message");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -228,7 +230,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", " ", "this is a message");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 
@@ -238,7 +240,7 @@ public class CopypastaRepositoryTest {
 			assertEquals(0, copypastaRepository.count());
 
 			Copypasta pasta = new Copypasta("name", "description", " ");
-			assertThrows(ConstraintViolationException.class, () -> copypastaRepository.save(pasta));
+			assertThrows(TransactionSystemException.class, () -> copypastaRepository.save(pasta));
 			assertEquals(0, copypastaRepository.count());
 		}
 	}
@@ -387,7 +389,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastaByName_shouldPass() {
 			// ? Test that deleting a Copypasta by name works
 			assertEquals(6, copypastaRepository.count());
-			copypastaRepository.deleteCopypastaByName("testName");
+			copypastaRepository.deleteCopypastaByNameNaturalId("testName");
 			assertEquals(5, copypastaRepository.count());
 		}
 
@@ -395,7 +397,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteNotExistsCopypasta_shouldFail() {
 			// ? Test that deleting a Copypasta that does not exist will fail.
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName("notExists"));
+			assertEquals(0, copypastaRepository.deleteCopypastaByNameNaturalId("notExists"));
 			assertEquals(6, copypastaRepository.count());
 		}
 
@@ -411,7 +413,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastasByWhitespaceString_shouldFail() {
 			// ? Test that deleting a Copypasta when passing in a whitespace string fails properly
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(" "));
+			assertEquals(0, copypastaRepository.deleteCopypastaByNameNaturalId(" "));
 			assertEquals(6, copypastaRepository.count());
 		}
 
@@ -419,7 +421,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastasByNullString_shouldFail() {
 			// ? Test that deleting a Copypasta when passing in a null string fails properly
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(null));
+			assertEquals(0, copypastaRepository.deleteCopypastaByNameNaturalId(null));
 			assertEquals(6, copypastaRepository.count());
 		}
 
@@ -428,7 +430,7 @@ public class CopypastaRepositoryTest {
 		void testDeleteCopypastasByEmptyString_shouldFail() {
 			// ? Test that deleting a Copypasta when passing in an empty string fails properly
 			assertEquals(6, copypastaRepository.count());
-			assertThrows(JpaObjectRetrievalFailureException.class, () -> copypastaRepository.deleteCopypastaByName(""));
+			assertEquals(0, copypastaRepository.deleteCopypastaByNameNaturalId(""));
 			assertEquals(6, copypastaRepository.count());
 		}
 	}

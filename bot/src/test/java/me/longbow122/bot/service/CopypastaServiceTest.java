@@ -61,6 +61,7 @@ public class CopypastaServiceTest {
 			assertEquals("testDescription", created.getDescription());
 			assertEquals("This is a message", created.getMessage());
 			verify(copypastaRepository, times(1)).save(any(Copypasta.class));
+			verify(copypastaRepository, times(1)).existsById(argThat(str -> str.equals("test")));
 			verify(copypastaRepository).save(argThat(copypasta ->
 				copypasta.getName().equals("test") &&
 					copypasta.getDescription().equals("testDescription") &&
@@ -69,12 +70,47 @@ public class CopypastaServiceTest {
 		}
 
 		@Test
-		void testMultipleValidInsertions_shouldPass() {
+		void testMultipleValidInsertion_shouldPass() {
 			// ? Test that inserting multiple records with the right information formatting works.
 			Copypasta pasta = new Copypasta("test", "testDescription", "This is a message");
-			Copypasta pasta2 = new Copypasta("testtwo", "testDescription2", "This is a message2");
+			Copypasta pasta2 = new Copypasta("testtwo", "testDesc", "This is another message");
 
 			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(pasta).thenReturn(pasta2);
+
+			Copypasta created = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta));
+
+			assertEquals("test", created.getName());
+			assertEquals("testDescription", created.getDescription());
+			assertEquals("This is a message", created.getMessage());
+			verify(copypastaRepository).save(argThat(copypasta ->
+				copypasta.getName().equals("test") &&
+				copypasta.getDescription().equals("testDescription") &&
+				copypasta.getMessage().equals("This is a message")));
+
+			Copypasta created2 = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta2));
+
+			assertEquals("testtwo", created2.getName());
+			assertEquals("testDesc", created2.getDescription());
+			assertEquals("This is another message", created2.getMessage());
+			verify(copypastaRepository).save(argThat(copypasta ->
+					copypasta.getName().equals("testtwo") &&
+					copypasta.getDescription().equals("testDesc") &&
+					copypasta.getMessage().equals("This is another message")));
+
+			verify(copypastaRepository, times(2)).save(any(Copypasta.class));
+			verify(copypastaRepository, times(2)).existsById(any(String.class));
+
+			verifyNoMoreInteractions(copypastaRepository);
+		}
+
+		@Test
+		void testPrimaryKeyCollisionInsertion_shouldFail() {
+			// ? Test that inserting multiple records with the same primary keys fails as expected.
+			Copypasta pasta = new Copypasta("test", "testDescription", "This is a message");
+			Copypasta pasta2 = new Copypasta("test", "testDescription2", "This is a message2");
+
+			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(pasta);
+			when(copypastaRepository.existsById(argThat(str -> str.equals("test")))).thenReturn(false).thenThrow(EntityNotFoundException.class);
 
 			Copypasta created = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta));
 
@@ -86,17 +122,38 @@ public class CopypastaServiceTest {
 					copypasta.getDescription().equals("testDescription") &&
 					copypasta.getMessage().equals("This is a message")));
 
-			Copypasta created2 = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta2));
+			BDDCatchException.when(() -> copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta2)));
 
-			assertEquals("testtwo", created2.getName());
-			assertEquals("testDescription2", created2.getDescription());
-			assertEquals("This is a message2", created2.getMessage());
-			verify(copypastaRepository).save(argThat(copypasta ->
-				copypasta.getName().equals("testtwo") &&
-					copypasta.getDescription().equals("testDescription2") &&
-					copypasta.getMessage().equals("This is a message2")));
+			verify(copypastaRepository, times(2)).existsById(argThat(str -> str.equals("test")));
+			verify(copypastaRepository).save(any(Copypasta.class));
+			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
+			verifyNoMoreInteractions(copypastaRepository);
+		}
+	}
 
-			verify(copypastaRepository, times(2)).save(any(Copypasta.class));
+	@Nested
+	class DeleteCopypasta {
+
+		@Test
+		void testValidDeletion_shouldPass() {
+			// ? Test that deleting a Copypasta works as intended.
+			when(copypastaRepository.deleteCopypastaByNameNaturalId("test")).thenReturn(1);
+
+			copypastaService.deleteCopypasta("test");
+
+			verify(copypastaRepository).deleteCopypastaByNameNaturalId("test");
+			verifyNoMoreInteractions(copypastaRepository);
+		}
+
+		@Test
+		void testDeletionNameNotExists_shouldFail() {
+			// ? Testing that deleting a Copypasta that doesn't exist fails as intended.
+			when(copypastaRepository.deleteCopypastaByNameNaturalId("test")).thenThrow(EntityNotFoundException.class);
+
+			BDDCatchException.when(() -> copypastaService.deleteCopypasta("test"));
+
+			verify(copypastaRepository).deleteCopypastaByNameNaturalId("test");
+			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
 			verifyNoMoreInteractions(copypastaRepository);
 		}
 	}
