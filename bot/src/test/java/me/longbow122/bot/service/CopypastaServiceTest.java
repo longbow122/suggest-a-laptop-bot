@@ -2,6 +2,7 @@ package me.longbow122.bot.service;
 
 import com.googlecode.catchexception.apis.BDDCatchException;
 import jakarta.persistence.EntityNotFoundException;
+import me.longbow122.bot.dto.mapper.CopypastaMapper;
 import me.longbow122.datamodel.repository.CopypastaRepository;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import org.junit.jupiter.api.Nested;
@@ -16,10 +17,10 @@ import java.util.Optional;
 
 import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {CopypastaService.class})
 public class CopypastaServiceTest {
@@ -43,6 +44,62 @@ public class CopypastaServiceTest {
 
 	@Autowired
 	private CopypastaService copypastaService;
+
+	@Nested
+	class CreateCopypasta {
+
+		@Test
+		void testValidInsertion_shouldPass() {
+			// ? Test that inserting a record with the right information formatting works.
+			Copypasta pasta = new Copypasta("test", "testDescription", "This is a message");
+
+			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(pasta);
+
+			Copypasta created = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta));
+
+			assertEquals("test", created.getName());
+			assertEquals("testDescription", created.getDescription());
+			assertEquals("This is a message", created.getMessage());
+			verify(copypastaRepository, times(1)).save(any(Copypasta.class));
+			verify(copypastaRepository).save(argThat(copypasta ->
+				copypasta.getName().equals("test") &&
+					copypasta.getDescription().equals("testDescription") &&
+					copypasta.getMessage().equals("This is a message")));
+			verifyNoMoreInteractions(copypastaRepository);
+		}
+
+		@Test
+		void testMultipleValidInsertions_shouldPass() {
+			// ? Test that inserting multiple records with the right information formatting works.
+			Copypasta pasta = new Copypasta("test", "testDescription", "This is a message");
+			Copypasta pasta2 = new Copypasta("testtwo", "testDescription2", "This is a message2");
+
+			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(pasta).thenReturn(pasta2);
+
+			Copypasta created = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta));
+
+			assertEquals("test", created.getName());
+			assertEquals("testDescription", created.getDescription());
+			assertEquals("This is a message", created.getMessage());
+			verify(copypastaRepository).save(argThat(copypasta ->
+				copypasta.getName().equals("test") &&
+					copypasta.getDescription().equals("testDescription") &&
+					copypasta.getMessage().equals("This is a message")));
+
+			Copypasta created2 = copypastaService.createCopypasta(CopypastaMapper.toDTO(pasta2));
+
+			assertEquals("testtwo", created2.getName());
+			assertEquals("testDescription2", created2.getDescription());
+			assertEquals("This is a message2", created2.getMessage());
+			verify(copypastaRepository).save(argThat(copypasta ->
+				copypasta.getName().equals("testtwo") &&
+					copypasta.getDescription().equals("testDescription2") &&
+					copypasta.getMessage().equals("This is a message2")));
+
+			verify(copypastaRepository, times(2)).save(any(Copypasta.class));
+			verifyNoMoreInteractions(copypastaRepository);
+		}
+	}
 
 	@Nested
 	class UpdateCopypasta {
