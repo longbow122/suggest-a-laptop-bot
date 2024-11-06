@@ -45,7 +45,13 @@ public class CopypastaModalListener extends ListenerAdapter {
 			} catch (IllegalArgumentException e) {
 				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(e.getMessage()).queue());
 			} catch (EntityExistsException e) {
-				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage("Looks like a command with that name already exists. Try again. \n Name: **" + nameEntered + "**\n Message: **" + messageEntered + "**" + "\n Description: **" + descriptionEntered + "**").queue());
+				String toSend = "Looks like a command with that name already exists. Try again. \n Name: **" + nameEntered + "**\n Message: **" + messageEntered + "**" + "\n Description: **" + descriptionEntered + "**";
+				if (toSend.length() > 2000) {
+					event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage("Looks like a command with that name already exists. Try again. \n Name: **" + nameEntered + "**\n Description: **" + descriptionEntered + "**\n Message: \n").queue());
+					event.getHook().getInteraction().getUser().openPrivateChannel().queue(channel -> channel.sendMessage(messageEntered).queue());
+					return;
+				}
+				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(toSend).queue());
 			}
 		}
 	}
