@@ -132,7 +132,13 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 							return;
 						}
 					}
-					event.reply("Copypasta successfully updated! \n Name: **" + nameEntered + "** \n Field: **" + fieldEntered + "** \n Value: **" + valueEntered + "**").setEphemeral(true).queue();
+					String toSend = "Copypasta successfully updated! \n Name: **" + nameEntered + "** \n Field: **" + fieldEntered + "** \n Value: **" + valueEntered + "**";
+					if (toSend.length() > 2000) {
+						event.reply("Copypasta successfully updated! \n **Name:** " + nameEntered + "\n **Field:** " + fieldEntered + "**Message:** \n").setEphemeral(true).queue();
+						event.getHook().sendMessage(valueEntered).setEphemeral(true).queue();
+						return;
+					}
+					event.reply(toSend).setEphemeral(true).queue();
 				} catch (EntityNotFoundException e) {
 					event.reply("Looks like a command with that name does NOT exist. Try updating a copypasta that exists.").setEphemeral(true).queue();
 				} catch (DataIntegrityViolationException | TransactionSystemException e) {
