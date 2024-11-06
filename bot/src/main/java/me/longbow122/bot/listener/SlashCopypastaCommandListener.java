@@ -40,7 +40,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS, THE FOUND COPYPASTA WAS EMPTY! PLEASE CONTACT AN ADMINISTRATOR!").setEphemeral(false).queue();
 				return;
 			}
-			event.reply(copypastaService.findCopypastaByName(event.getName()).get().getMessage()).setEphemeral(false).queue();
+			event.reply(found.get().getMessage()).setEphemeral(false).queue();
 			return;
 		}
 		//* Worth noting that we are only checking cached members here, so need to ensure that members are cached properly when checking.
@@ -104,14 +104,26 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				try {
 					switch (fieldEntered) {
 						case "name": {
+							if (!validateName(valueEntered)) {
+								event.reply("Looks like the name you entered was invalid. Please use a valid name when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
+								return;
+							}
 							copypastaService.updateCopypastaName(nameEntered, valueEntered);
 							break;
 						}
 						case "description": {
+							if (!validateDescription(valueEntered)) {
+								event.reply("Looks like the description you entered was invalid. Please use a valid description when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
+								return;
+							}
 							copypastaService.updateCopypastaDescription(nameEntered, valueEntered);
 							break;
 						}
 						case "message": {
+							if (!validateMessage(valueEntered)) {
+								event.reply("Looks like the message you entered was invalid. Please use a valid message when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
+								return;
+							}
 							copypastaService.updateCopypastaMessage(nameEntered, valueEntered);
 							break;
 						}
@@ -132,5 +144,21 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				event.reply("THE COPYPASTA YOU TRIED SENDING HAS EITHER BEEN DELETED OR DOES NOT EXIST. PLEASE CONTACT AN ADMIN IF YOU BELIEVE THAT THIS IS IN ERROR.").setEphemeral(false).queue();
 			}
 		}
+	}
+
+	private boolean validateName(String name) {
+		if (name.isBlank() || name.length() > 32) return false;
+		for (char i : name.toCharArray()) {
+			if(!(Character.isLowerCase(i)) || !(Character.isAlphabetic(i)) || i == ' ') return false;
+		}
+		return true;
+	}
+
+	private boolean validateDescription(String description) {
+		return !description.isBlank() && description.length() <= 100;
+	}
+
+	private boolean validateMessage(String message) {
+		return !message.isBlank() && message.length() <= 2000;
 	}
 }
