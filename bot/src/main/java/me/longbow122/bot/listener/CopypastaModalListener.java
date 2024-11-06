@@ -36,6 +36,11 @@ public class CopypastaModalListener extends ListenerAdapter {
 			try {
 				CopypastaDTO added = new CopypastaDTO(nameEntered, descriptionEntered, messageEntered);
 				copypastaService.createCopypasta(added);
+				if (messageEntered.length() > 1024) {
+					event.reply("Copypasta added successfully! \n **Name:** " + nameEntered + " \n **Description:** " + descriptionEntered + "\n **Message:** \n").queue();
+					event.getHook().sendMessage(messageEntered).queue();
+					return;
+				}
 				event.reply(MessageCreateData.fromEmbeds(getCommandAddedEmbed(nameEntered, descriptionEntered, messageEntered))).queue();
 			} catch (IllegalArgumentException e) {
 				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(e.getMessage()).queue());

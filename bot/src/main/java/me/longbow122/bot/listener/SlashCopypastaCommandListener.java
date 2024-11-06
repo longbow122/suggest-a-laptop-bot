@@ -62,7 +62,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			//* Deal with the addition of copypastas here.
 			case "copypasta add": {
 				TextInput commandName = TextInput.create("name", "Command Name:", TextInputStyle.SHORT).setPlaceholder("Enter the name of the command.").setMinLength(1).setMaxLength(32).build();
-				TextInput commandDescription = TextInput.create("description", "Description:", TextInputStyle.PARAGRAPH).setPlaceholder("Enter a description of the command.").setMinLength(1).setMaxLength(100).build();
+				TextInput commandDescription = TextInput.create("description", "Description:", TextInputStyle.SHORT).setPlaceholder("Enter a description of the command.").setMinLength(1).setMaxLength(100).build();
 				TextInput commandMessage = TextInput.create("message", "Message:", TextInputStyle.PARAGRAPH).setPlaceholder("Enter the message to be sent.").setMinLength(1).setMaxLength(2000).build();
 				Modal modal = Modal.create("copypastaAdd", "Add a new copypasta")
 					.addActionRow(commandName)
