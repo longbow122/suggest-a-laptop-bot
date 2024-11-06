@@ -1,5 +1,6 @@
 package me.longbow122.bot.service;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import me.longbow122.datamodel.repository.CopypastaRepository;
@@ -26,12 +27,18 @@ public class CopypastaService {
 
 	@Transactional
 	public Copypasta createCopypasta(CopypastaDTO copypastaDTO) {
-		return copypastaRepository.save(CopypastaMapper.toCopypasta(copypastaDTO));
+		Copypasta created = CopypastaMapper.toCopypasta(copypastaDTO);
+		if (copypastaRepository.existsById(created.getName())) {
+			throw new EntityExistsException("Copypasta with name " + created.getName() + " already exists");
+		}
+		return copypastaRepository.save(created);
 	}
 
 	@Transactional
 	public void deleteCopypasta(String name) {
-		copypastaRepository.deleteCopypastaByName(name);
+		if (copypastaRepository.deleteCopypastaByNameNaturalId(name) == 0) {
+			throw new EntityNotFoundException("Copypasta with name " + name + " does not exist");
+		}
 	}
 
 	@Transactional
@@ -48,6 +55,8 @@ public class CopypastaService {
 	public Optional<Copypasta> findCopypastaByName(String name) {
 		return copypastaRepository.findCopypastaByName(name);
 	}
+
+	//TODO COULD WE CLEAN THESE UPDATE METHODS UP TO BE A SINGULAR METHOD?
 
 	public void updateCopypastaName(String oldName, String newName) {
 		Copypasta pasta = copypastaRepository.findCopypastaByName(oldName).orElseThrow(() ->
