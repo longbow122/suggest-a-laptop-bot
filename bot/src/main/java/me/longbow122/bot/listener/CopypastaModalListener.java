@@ -1,5 +1,6 @@
 package me.longbow122.bot.listener;
 
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.longbow122.bot.dto.CopypastaDTO;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Objects;
 
@@ -39,8 +39,8 @@ public class CopypastaModalListener extends ListenerAdapter {
 				event.reply(MessageCreateData.fromEmbeds(getCommandAddedEmbed(nameEntered, descriptionEntered, messageEntered))).queue();
 			} catch (IllegalArgumentException e) {
 				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(e.getMessage()).queue());
-			} catch (DataIntegrityViolationException e) {
-				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage("Looks like a command with that name already exists. Try again. \n Message: **" + messageEntered + "**" + "\n Description: **" + descriptionEntered + "**").queue());
+			} catch (EntityExistsException e) {
+				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage("Looks like a command with that name already exists. Try again. \n Name: **" + nameEntered + "**\n Message: **" + messageEntered + "**" + "\n Description: **" + descriptionEntered + "**").queue());
 			}
 		}
 	}
