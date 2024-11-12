@@ -15,6 +15,9 @@
         <module>data-model</module>
     </modules>
 
+    <!--TODO LOOK INTO MOVING COMMON DEPENDENCIES INTO HERE, SO THAT WE CAN TAKE THESE IN FROM HERE, AND HAVE THEM BE
+            IN THEIR MODULES FROM THIS MAIN POM FILE FOR DEPENDENCIES. -->
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
