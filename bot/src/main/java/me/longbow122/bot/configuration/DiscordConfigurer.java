@@ -51,7 +51,7 @@ public class DiscordConfigurer {
                 .setActivity(Activity.customStatus("Use /form for help!"))
                 .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
-                .addEventListeners(new CopypastaModalListener(copypastaService))
+                .addEventListeners(new CopypastaModalListener(copypastaService, this))
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();
@@ -68,6 +68,8 @@ public class DiscordConfigurer {
                 .addOption(OptionType.STRING, "name", "The current name of the copypasta command to be updated. REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "field", "The field to update. (Name, Description, Message). REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "value", "The new value of the field. REQUIRED.", true)));
+
+        commands.addCommands(Commands.slash("form", "Get a laptop recommendation here!"));
         commands.queue();
         jdaBuild.awaitReady();
         this.jda = jdaBuild;
