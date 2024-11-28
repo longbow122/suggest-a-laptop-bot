@@ -3,8 +3,6 @@ package me.longbow122.bot.configuration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.bot.listener.SlashFormCommandListener;
-import me.longbow122.bot.service.FormService;
 import me.longbow122.datamodel.repository.entities.Copypasta;
 import me.longbow122.bot.listener.CopypastaAutocompleteListener;
 import me.longbow122.bot.listener.CopypastaModalListener;
@@ -34,16 +32,13 @@ public class DiscordConfigurer {
 
     private final CopypastaService copypastaService;
 
-    private final FormService formService;
-
     @Getter
     private JDA jda;
 
     @Autowired
-    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService, FormService formService) {
+    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService) {
         this.discordConfigurationProperties = discordConfigurationProperties;
         this.copypastaService = copypastaService;
-        this.formService = formService;
     }
 
     @Bean
@@ -56,8 +51,7 @@ public class DiscordConfigurer {
                 .setActivity(Activity.customStatus("Use /form for help!"))
                 .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
-                .addEventListeners(new CopypastaModalListener(copypastaService, formService))
-                .addEventListeners(new SlashFormCommandListener())
+                .addEventListeners(new CopypastaModalListener(copypastaService, this))
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();

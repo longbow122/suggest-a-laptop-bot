@@ -3,12 +3,15 @@ package me.longbow122.bot.listener;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.longbow122.bot.configuration.DiscordConfigurer;
 import me.longbow122.bot.dto.CopypastaDTO;
 import me.longbow122.bot.dto.FormDTO;
+import me.longbow122.bot.exception.exceptions.ChannelNotFoundException;
 import me.longbow122.bot.service.CopypastaService;
-import me.longbow122.bot.service.FormService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -23,7 +26,7 @@ public class CopypastaModalListener extends ListenerAdapter {
 
 	private final CopypastaService copypastaService;
 
-	private final FormService formService;
+	private final DiscordConfigurer discordConfigurer;
 
 	/*
 	* We do not get exceptions or much control over invalid input at the Modal layer, so a lot of this validation does not end up triggering.
@@ -60,7 +63,7 @@ public class CopypastaModalListener extends ListenerAdapter {
 			}
 		}
 		if (event.getModalId().equals("formSend")) {
-			FormDTO form = new FormDTO(event.getUser().getName(), 1L, List.of(
+			FormDTO form = new FormDTO(event.getUser().getName(), 1202027508606959706L, List.of(
 				"What currency will you be purchasing in? What is your budget?",
 				"How would you prioritise form factor, build quality, performance and battery life? Do you have a preferred screen size?",
 				"Are you doing any CAD/Video Editing/Gaming? List which programs/games you would like to run.",
@@ -71,8 +74,31 @@ public class CopypastaModalListener extends ListenerAdapter {
 				Objects.requireNonNull(event.getValue("question3")).getAsString(),
 				Objects.requireNonNull(event.getValue("question4")).getAsString(),
 				Objects.requireNonNull(event.getValue("question5")).getAsString()));
-			formService.postForm(form);
+			TextChannel formChannel = discordConfigurer.getJda().getTextChannelById(form.channelSendID());
+			if (formChannel == null) {
+				throw new ChannelNotFoundException("Form channel not found! Please check the relevant forms and the requests they make!");
+			}
+			formChannel.sendMessage(postForm(event.getUser(), form)).queue();
+			event.reply("Your form has been sent to the relevant channel! Please wait for a response!").setEphemeral(true).queue();
+			return;
+			//event.reply(postForm(event.getUser(), form)).setEphemeral(false).queue();
 		}
+	}
+
+	//TODO THIS IS A VERY TEMPORARY METHOD THAT NEEDS TO BE REMOVED AND MASSIVELY REWORKED IF THIS POC ENDS UP
+	//  GOING THROUGH. NEED TO REMOVE THE USE OF FORMS, NEED TO REMOVE THE USE OF THE API, ETC.
+
+	private String postForm(User user, FormDTO form) {
+		List<String> questions = form.questions();
+		List<String> answers = form.answers();
+		StringBuilder formattedForm = new StringBuilder();
+		for (int index = 0; index < questions.size(); index++) {
+			formattedForm.append("**").append(questions.get(index)).append("**");
+			formattedForm.append("\n");
+			formattedForm.append(answers.get(index)).append("\n");
+		}
+		formattedForm.append("**Posted by: **").append(user.getAsMention());
+		return formattedForm.toString();
 	}
 
 	private MessageEmbed getCommandAddedEmbed(String name, String description, String message) {
