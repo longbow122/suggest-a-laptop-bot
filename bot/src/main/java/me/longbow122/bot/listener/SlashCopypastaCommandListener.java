@@ -49,6 +49,25 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS. WE COULD NOT FIND A USER!").setEphemeral(false).queue();
 			return;
 		}
+		if (event.getFullCommandName().equals("form")) {
+			//TODO IMPLEMENT MODAL HERE FOR FORMS!
+			// THEN WE NEED TO TAKE QUESTIONS AND THE ANSWERS AND PUT THEM IN!
+			// NEED TO USE FORM SERVICE TO HANDLE THE POSTING SINCE THAT WILL HAVE EVERYTHING WE NEED
+			// CAN HARDCODE THE FORMDTO
+			TextInput questionOne = TextInput.create("question1", "What is your budget and country of purchase?", TextInputStyle.PARAGRAPH).setMinLength(3).setMaxLength(100).build();
+			TextInput questionTwo = TextInput.create("question2", "Rank form, build, performance, battery", TextInputStyle.PARAGRAPH).setMaxLength(300).build();
+			TextInput questionThree = TextInput.create("question3", "What programs will you be running?", TextInputStyle.PARAGRAPH).setMinLength(1).setMaxLength(300).build();
+			TextInput questionFour = TextInput.create("question4", "Any specific requirements/thoughts?", TextInputStyle.PARAGRAPH).setRequired(false).setMinLength(1).setMaxLength(300).build();
+			Modal modal = Modal.create("formSend", "Get a laptop recommendation")
+				.addActionRow(questionOne)
+				.addActionRow(questionTwo)
+				.addActionRow(questionThree)
+				.addActionRow(questionFour)
+				.build();
+			event.replyModal(modal).queue();
+			return;
+		}
+
 		Role copypastaRole = event.getGuild().getRoleById(discordConfigurationProperties.copypastaRoleID());
 		Role adminRole = event.getGuild().getRoleById(discordConfigurationProperties.adminRoleID());
 		//* You need to have the copypasta role to be able to work with copypasta commands.
@@ -144,26 +163,6 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				} catch (DataIntegrityViolationException | TransactionSystemException e) {
 					event.reply("The field you tried updating did not adhere to the constraints of Copypastas! \n Names must be between 1-32 lowercase characters, with no numbers and no whitespaces and **unique**. \n Descriptions must be between 1-100 characters. \n Messages must be between 1-2000 characters.").setEphemeral(true).queue();
 				}
-				return;
-			}
-			case "form": {
-				//TODO IMPLEMENT MODAL HERE FOR FORMS!
-				// THEN WE NEED TO TAKE QUESTIONS AND THE ANSWERS AND PUT THEM IN!
-				// NEED TO USE FORM SERVICE TO HANDLE THE POSTING SINCE THAT WILL HAVE EVERYTHING WE NEED
-				// CAN HARDCODE THE FORMDTO
-				TextInput questionOne = TextInput.create("question1", "What currency will you be purchasing in?", TextInputStyle.PARAGRAPH).setMinLength(3).setMaxLength(300).build();
-				TextInput questionTwo = TextInput.create("question2", "How would you prioritise form factor, etc?", TextInputStyle.PARAGRAPH).setMinLength(50).setMaxLength(300).build();
-				TextInput questionThree = TextInput.create("question3", "Are you doing any CAD/Video Editing/Gaming?", TextInputStyle.PARAGRAPH).setMinLength(1).setMaxLength(300).build();
-				TextInput questionFour = TextInput.create("question4", "Any specific requirements?", TextInputStyle.PARAGRAPH).setMinLength(1).setMaxLength(300).build();
-				TextInput questionFive = TextInput.create("question5", "Leave any finishing thoughts here!", TextInputStyle.PARAGRAPH).setMinLength(1).setMaxLength(300).build();
-				Modal modal = Modal.create("formSend", "Get a laptop reccomendation")
-					.addActionRow(questionOne)
-					.addActionRow(questionTwo)
-					.addActionRow(questionThree)
-					.addActionRow(questionFour)
-					.addActionRow(questionFive)
-					.build();
-				event.replyModal(modal).queue();
 				return;
 			}
 			default: {

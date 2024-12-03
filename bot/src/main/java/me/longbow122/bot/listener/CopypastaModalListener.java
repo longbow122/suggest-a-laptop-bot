@@ -64,24 +64,26 @@ public class CopypastaModalListener extends ListenerAdapter {
 		}
 		if (event.getModalId().equals("formSend")) {
 			FormDTO form = new FormDTO(event.getUser().getName(), 1202027508606959706L, List.of(
-				"What currency will you be purchasing in? What is your budget?",
+				"What is your budget and country of purchase?",
+				"Rank form, build, performance, battery",
+				"What programs will you be running?",
+				"Any specific requirements/thoughts?"
+
+				/*"What currency will you be purchasing in? What is your budget?",
 				"How would you prioritise form factor, build quality, performance and battery life? Do you have a preferred screen size?",
 				"Are you doing any CAD/Video Editing/Gaming? List which programs/games you would like to run.",
 				"Any specific requirements such as good keyboard, touch-screen, 2-in-1, fingerprint reader, optical drive, etc?",
-				"Leave any finishing thoughts here you feel are potentially necessary and beneficial to the discussion."), List.of(
+				"Leave any finishing thoughts here you feel are potentially necessary and beneficial to the discussion."*/), List.of(
 				Objects.requireNonNull(event.getValue("question1")).getAsString(),
 				Objects.requireNonNull(event.getValue("question2")).getAsString(),
 				Objects.requireNonNull(event.getValue("question3")).getAsString(),
-				Objects.requireNonNull(event.getValue("question4")).getAsString(),
-				Objects.requireNonNull(event.getValue("question5")).getAsString()));
+				Objects.requireNonNull(event.getValue("question4")).getAsString()));
 			TextChannel formChannel = discordConfigurer.getJda().getTextChannelById(form.channelSendID());
 			if (formChannel == null) {
 				throw new ChannelNotFoundException("Form channel not found! Please check the relevant forms and the requests they make!");
 			}
 			formChannel.sendMessage(postForm(event.getUser(), form)).queue();
 			event.reply("Your form has been sent to the relevant channel! Please wait for a response!").setEphemeral(true).queue();
-			return;
-			//event.reply(postForm(event.getUser(), form)).setEphemeral(false).queue();
 		}
 	}
 
