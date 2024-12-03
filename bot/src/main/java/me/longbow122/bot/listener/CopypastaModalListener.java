@@ -65,6 +65,7 @@ public class CopypastaModalListener extends ListenerAdapter {
 		if (event.getModalId().equals("formSend")) {
 			FormDTO form = new FormDTO(event.getUser().getName(), 1202027508606959706L, List.of(
 				"What is your budget and country of purchase?",
+				"Are you open to refurbished/used laptops?",
 				"Rank form, build, performance, battery",
 				"What programs will you be running?",
 				"Any specific requirements/thoughts?"
@@ -77,7 +78,8 @@ public class CopypastaModalListener extends ListenerAdapter {
 				Objects.requireNonNull(event.getValue("question1")).getAsString(),
 				Objects.requireNonNull(event.getValue("question2")).getAsString(),
 				Objects.requireNonNull(event.getValue("question3")).getAsString(),
-				Objects.requireNonNull(event.getValue("question4")).getAsString()));
+				Objects.requireNonNull(event.getValue("question4")).getAsString(),
+				Objects.requireNonNull(event.getValue("question5")).getAsString()));
 			TextChannel formChannel = discordConfigurer.getJda().getTextChannelById(form.channelSendID());
 			if (formChannel == null) {
 				throw new ChannelNotFoundException("Form channel not found! Please check the relevant forms and the requests they make!");

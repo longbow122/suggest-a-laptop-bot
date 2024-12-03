@@ -54,15 +54,27 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			// THEN WE NEED TO TAKE QUESTIONS AND THE ANSWERS AND PUT THEM IN!
 			// NEED TO USE FORM SERVICE TO HANDLE THE POSTING SINCE THAT WILL HAVE EVERYTHING WE NEED
 			// CAN HARDCODE THE FORMDTO
-			TextInput questionOne = TextInput.create("question1", "What is your budget and country of purchase?", TextInputStyle.PARAGRAPH).setMinLength(3).setMaxLength(100).build();
-			TextInput questionTwo = TextInput.create("question2", "Rank form, build, performance, battery", TextInputStyle.PARAGRAPH).setMaxLength(300).build();
-			TextInput questionThree = TextInput.create("question3", "What programs will you be running?", TextInputStyle.PARAGRAPH).setMinLength(1).setMaxLength(300).build();
-			TextInput questionFour = TextInput.create("question4", "Any specific requirements/thoughts?", TextInputStyle.PARAGRAPH).setRequired(false).setMinLength(1).setMaxLength(300).build();
+			TextInput questionOne = TextInput.create("question1", "What is your budget and country of purchase?", TextInputStyle.PARAGRAPH).setMinLength(3)
+				.setPlaceholder("Please make sure you give us the country you will be purchasing in!")
+				.setMaxLength(100).build();
+			TextInput questionTwo = TextInput.create("question2", "Are you open to refurbished/used laptops?", TextInputStyle.PARAGRAPH).setMinLength(1)
+				.setPlaceholder("Are you open to purchasing a refurbished/used laptop? If your budget is low, this may be required!")
+				.setMaxLength(100).build();
+			TextInput questionThree = TextInput.create("question3", "Do you have a preferred screen size?", TextInputStyle.PARAGRAPH)
+				.setPlaceholder("State your preferred screen size. If indifferent, do not fill.")
+				.setRequired(false).setMinLength(1).setMaxLength(200).build();
+			TextInput questionFour = TextInput.create("question4", "Rank form, build, performance, battery", TextInputStyle.PARAGRAPH)
+				.setPlaceholder("Form factor, build quality, performance, and battery life. Rank these in order of preference!")
+				.setMinLength(1).setMaxLength(300).build();
+			TextInput questionFive = TextInput.create("question5", "What programs will you be running?", TextInputStyle.PARAGRAPH)
+				.setPlaceholder("Please name every program you want to run. We want the most intensive thing you do on this laptop!")
+				.setRequired(false).setMinLength(1).setMaxLength(1000).build();
 			Modal modal = Modal.create("formSend", "Get a laptop recommendation")
 				.addActionRow(questionOne)
 				.addActionRow(questionTwo)
 				.addActionRow(questionThree)
 				.addActionRow(questionFour)
+				.addActionRow(questionFive)
 				.build();
 			event.replyModal(modal).queue();
 			return;
