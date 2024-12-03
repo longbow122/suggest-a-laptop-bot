@@ -61,7 +61,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				.setPlaceholder("Are you open to purchasing a refurbished/used laptop? If your budget is low, this may be required!")
 				.setMaxLength(100).build();
 			TextInput questionThree = TextInput.create("question3", "Do you have a preferred screen size?", TextInputStyle.PARAGRAPH)
-				.setPlaceholder("State your preferred screen size. If indifferent, do not fill.")
+				.setPlaceholder("What size would you prefer? <13\", 13-14\", 15-16\", 17\"+. If indifferent, do not fill.")
 				.setRequired(false).setMinLength(1).setMaxLength(200).build();
 			TextInput questionFour = TextInput.create("question4", "Rank form, build, performance, battery", TextInputStyle.PARAGRAPH)
 				.setPlaceholder("Form factor, build quality, performance, and battery life. Rank these in order of preference!")
