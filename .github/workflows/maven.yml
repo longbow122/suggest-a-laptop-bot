@@ -9,9 +9,6 @@
 name: Java CI with Maven
 
 on:
-  # No longer need this trigger since we run a different workflow to handle releasing squashed commits
-  #push:
-    #branches: [ "main" ]
   pull_request:
     types: [ opened ]
     #branches: [ "main" ]
@@ -23,6 +20,7 @@ permissions:
 
 jobs:
   build:
+    name: Build with Maven and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -33,10 +31,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
+    - name: Build with Maven and Test
       run: mvn clean install
       # Maven Package achieves the same results, but does not install the packaged build into the local Mvn Repository.
-      #run: mvn -B package --file pom.xml
+      #run: mvn -B package --file pom.xml 
       
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive

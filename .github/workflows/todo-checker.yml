@@ -1,0 +1,26 @@
+name: PR Todo Checker and Flagger
+on:
+  # Trigger the checking on all branches, since we want to know where and when a to do exists.
+  pull_request_review_comment:
+    types: [ "edited", "deleted" ]
+  pull_request:
+    types: [ "opened", "reopened", "synchronize" ]
+
+jobs:
+  find_todos:
+    name: Flag TODOs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for Todos
+        uses: phntmxyz/pr_todo_checker@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment_on_todo: true
+          comment_body: 'A new Todo was discovered. If it is not a priority right now, consider marking it for later attention. 
+          
+          {todo}'
+          comment_checkbox: 'Ignore'
