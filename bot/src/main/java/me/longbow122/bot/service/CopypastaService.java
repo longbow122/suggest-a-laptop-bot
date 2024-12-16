@@ -56,26 +56,17 @@ public class CopypastaService {
 		return copypastaRepository.findCopypastaByName(name);
 	}
 
-	//TODO COULD WE CLEAN THESE UPDATE METHODS UP TO BE A SINGULAR METHOD?
+	//TODO CAN WE IMPROVE THIS TO THROW THE RIGHT EXCEPTION, REMOVING SOME MORE LOGIC FROM THE COMMAND LISTENER?
+	// NEEDS THE RIGHT TESTING TO BE DONE ON IT BEFORE WE CAN ENSURE THAT THE RIGHT EXCEPTION IS THROWN
 
-	public void updateCopypastaName(String oldName, String newName) {
-		Copypasta pasta = copypastaRepository.findCopypastaByName(oldName).orElseThrow(() ->
-			new EntityNotFoundException("Copypasta with name: " + oldName + " does not exist!"));
-		pasta.setName(newName);
-		copypastaRepository.save(pasta);
-	}
-
-	public void updateCopypastaDescription(String oldName, String newDescription) {
-		Copypasta pasta = copypastaRepository.findCopypastaByName(oldName).orElseThrow(() ->
-			new EntityNotFoundException("Copypasta with name: " + oldName + " does not exist"));
-		pasta.setDescription(newDescription);
-		copypastaRepository.save(pasta);
-	}
-
-	public void updateCopypastaMessage(String oldName, String newMessage) {
-		Copypasta pasta = copypastaRepository.findCopypastaByName(oldName).orElseThrow(() ->
-			new EntityNotFoundException("Copypasta with name: " + oldName + " does not exist"));
-		pasta.setMessage(newMessage);
+	public void updateCopypasta(String currentName, CopypastaUpdateType updateType, String updatedValue) {
+		Copypasta pasta = copypastaRepository.findCopypastaByName(currentName).orElseThrow(() ->
+			new EntityNotFoundException("Copypasta with name " + currentName + " does not exist"));
+		switch (updateType) {
+			case NAME -> pasta.setName(updatedValue);
+			case DESCRIPTION -> pasta.setDescription(updatedValue);
+			case MESSAGE -> pasta.setMessage(updatedValue);
+		}
 		copypastaRepository.save(pasta);
 	}
 
