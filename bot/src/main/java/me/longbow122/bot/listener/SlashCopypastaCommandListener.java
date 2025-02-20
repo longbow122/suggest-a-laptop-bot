@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -16,9 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionSystemException;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class SlashCopypastaCommandListener extends ListenerAdapter {
@@ -43,6 +42,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			event.reply(found.get().getMessage()).setEphemeral(false).queue();
 			return;
 		}
+
 		//* Worth noting that we are only checking cached members here, so need to ensure that members are cached properly when checking.
 		Member user = event.getGuild().getMemberById(event.getUser().getIdLong());
 		if (user == null) {
@@ -127,7 +127,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				String nameEntered = event.getOption("name").getAsString();
 				String fieldEntered = event.getOption("field").getAsString();
 				String valueEntered = event.getOption("value").getAsString();
-				List<String> fieldVals = Arrays.asList("name", "description", "message");
+				Set<String> fieldVals = new HashSet<>(List.of("name", "description", "message"));
 				if (!(fieldVals.contains(fieldEntered))) {
 					event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
 					return;
