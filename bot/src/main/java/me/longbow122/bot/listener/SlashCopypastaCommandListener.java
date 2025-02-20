@@ -1,10 +1,13 @@
 package me.longbow122.bot.listener;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.datamodel.repository.entities.Copypasta;
+import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.service.CopypastaService;
+import me.longbow122.bot.service.CopypastaUpdateType;
+import me.longbow122.datamodel.repository.entities.Copypasta;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -26,19 +29,16 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 
 	private final DiscordConfigurationProperties discordConfigurationProperties;
 
+	private final FormConfigurationProperties formConfigurationProperties;
+
 
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 		//Something bad must have happened for the guild to return null here.
 		if (event.getGuild() == null) return;
 		//* Standard Copypasta handling is here
-		List<Copypasta> pastas = copypastaService.findAllCopypasta();
-		if (pastas.stream().anyMatch(pasta -> pasta.getName().equals(event.getName()))) {
-			Optional<Copypasta> found = copypastaService.findCopypastaByName(event.getName());
-			if (found.isEmpty()) {
-				event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS, THE FOUND COPYPASTA WAS EMPTY! PLEASE CONTACT AN ADMINISTRATOR!").setEphemeral(false).queue();
-				return;
-			}
+		Optional<Copypasta> found = copypastaService.findCopypastaByName(event.getName());
+		if (found.isPresent()) {
 			event.reply(found.get().getMessage()).setEphemeral(false).queue();
 			return;
 		}
@@ -133,36 +133,14 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 					return;
 				}
 				try {
-					switch (fieldEntered) {
-						case "name": {
-							if (!validateName(valueEntered)) {
-								event.reply("Looks like the name you entered was invalid. Please use a valid name when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
-								return;
-							}
-							copypastaService.updateCopypastaName(nameEntered, valueEntered);
-							break;
-						}
-						case "description": {
-							if (!validateDescription(valueEntered)) {
-								event.reply("Looks like the description you entered was invalid. Please use a valid description when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
-								return;
-							}
-							copypastaService.updateCopypastaDescription(nameEntered, valueEntered);
-							break;
-						}
-						case "message": {
-							if (!validateMessage(valueEntered)) {
-								event.reply("Looks like the message you entered was invalid. Please use a valid message when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
-								return;
-							}
-							copypastaService.updateCopypastaMessage(nameEntered, valueEntered);
-							break;
-						}
-						default: {
-							event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
-							return;
-						}
+					//TODO TEST THAT THE YML CONFIG FILE WORKS AS INTENDED
+					//TODO ENSURE THAT WE HAVE FORMS BE FULLY CONFIGURABLE!
+					Set<String> fields = new HashSet<>(Arrays.asList("name", "description", "message"));
+					if (!fields.contains(fieldEntered)) {
+						event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
+						return;
 					}
+					copypastaService.updateCopypasta(nameEntered, CopypastaUpdateType.valueOf(fieldEntered.toUpperCase()), valueEntered);
 					String toSend = "Copypasta successfully updated! \n Name: **" + nameEntered + "** \n Field: **" + fieldEntered + "** \n Value: **" + valueEntered + "**";
 					if (toSend.length() > 2000) {
 						event.reply("Copypasta successfully updated! \n **Name:** " + nameEntered + "\n **Field:** " + fieldEntered + "**Message:** \n").setEphemeral(true).queue();
@@ -172,7 +150,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 					event.reply(toSend).setEphemeral(true).queue();
 				} catch (EntityNotFoundException e) {
 					event.reply("Looks like a command with that name does NOT exist. Try updating a copypasta that exists.").setEphemeral(true).queue();
-				} catch (DataIntegrityViolationException | TransactionSystemException e) {
+				} catch (DataIntegrityViolationException | TransactionSystemException | EntityExistsException e) {
 					event.reply("The field you tried updating did not adhere to the constraints of Copypastas! \n Names must be between 1-32 lowercase characters, with no numbers and no whitespaces and **unique**. \n Descriptions must be between 1-100 characters. \n Messages must be between 1-2000 characters.").setEphemeral(true).queue();
 				}
 				return;
@@ -183,19 +161,4 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 		}
 	}
 
-	private boolean validateName(String name) {
-		if (name.isBlank() || name.length() > 32) return false;
-		for (char i : name.toCharArray()) {
-			if(!(Character.isLowerCase(i)) || !(Character.isAlphabetic(i)) || i == ' ') return false;
-		}
-		return true;
-	}
-
-	private boolean validateDescription(String description) {
-		return !description.isBlank() && description.length() <= 100;
-	}
-
-	private boolean validateMessage(String message) {
-		return !message.isBlank() && message.length() <= 2000;
-	}
 }
