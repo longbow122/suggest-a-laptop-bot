@@ -82,6 +82,10 @@ public class CopypastaRepositoryTest {
 			assertEquals(1, copypastaRepository.count());
 			copypastaRepository.save(pasta2);
 			assertEquals(1, copypastaRepository.count());
+			Copypasta pastaUnderName = copypastaRepository.findCopypastaByName("testName").get();
+			assertEquals("testName", pastaUnderName.getName());
+			assertEquals("testDesc", pastaUnderName.getDescription());
+			assertEquals("This is another message", pastaUnderName.getMessage());
 		}
 
 		@Test
