@@ -3,6 +3,7 @@ package me.longbow122.bot.listener;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import me.longbow122.bot.configuration.DiscordConfigurer;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
 import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.service.CopypastaService;
@@ -31,6 +32,8 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 
 	private final FormConfigurationProperties formConfigurationProperties;
 
+	private final DiscordConfigurer discordConfigurer;
+
 
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -51,14 +54,17 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 		}
 		if (event.getFullCommandName().equals("form")) {
 			StringSelectMenu.Builder menu = StringSelectMenu.create("form-select");
-			Set<String> formCategories = formConfigurationProperties.forms().keySet();
-			for (String category : formCategories) {
-				char[] categoryCharacters = category.toCharArray();
+			Map<String, FormConfigurationProperties.Form> forms = formConfigurationProperties.forms();
+			for (Map.Entry<String, FormConfigurationProperties.Form> entry : forms.entrySet()) {
+				//TODO NEED TO PROVIDE LOGGING INFORMATION WHEN IMPLEMENTED HERE!
+				// WE NEED TO ENSURE THAT WE KNOW WHICH FORM IS INVALID AND FOR WHAT REASON!
+				if (!isFormValid(entry.getValue())) continue;
+				char[] categoryCharacters = entry.getKey().toCharArray();
 				for (int i = 0; i < categoryCharacters.length; i++) {
 					if (i == 0) categoryCharacters[i] = Character.toUpperCase(categoryCharacters[i]);
 					else categoryCharacters[i] = Character.toLowerCase(categoryCharacters[i]);
 				}
-				menu.addOption(String.valueOf(categoryCharacters), category);
+				menu.addOption(String.valueOf(categoryCharacters), entry.getKey());
 			}
 			event.reply("Looking for a laptop recommendation? Select a category below to get started!").addActionRow(menu.setMaxValues(1).build()).setEphemeral(true).queue();
 			return;
@@ -117,8 +123,6 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 					return;
 				}
 				try {
-					//TODO TEST THAT THE YML CONFIG FILE WORKS AS INTENDED
-					//TODO ENSURE THAT WE HAVE FORMS BE FULLY CONFIGURABLE!
 					Set<String> fields = new HashSet<>(Arrays.asList("name", "description", "message"));
 					if (!fields.contains(fieldEntered)) {
 						event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
@@ -143,6 +147,20 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				event.reply("THE COPYPASTA YOU TRIED SENDING HAS EITHER BEEN DELETED OR DOES NOT EXIST. PLEASE CONTACT AN ADMIN IF YOU BELIEVE THAT THIS IS IN ERROR.").setEphemeral(false).queue();
 			}
 		}
+	}
+
+	private boolean isFormValid(FormConfigurationProperties.Form form) {
+		if (form.questions().size() > 5 || form.placeholders().size() > 5 || form.questions().size() != form.placeholders().size() ||
+			discordConfigurer.getJda().getTextChannelById(form.formChannel()) == null) return false;
+
+		for (String question : form.questions()) {
+			if (question.isBlank() || question.length() > 45) return false;
+		}
+
+		for (String placeholder : form.placeholders()) {
+			if (placeholder.isBlank() || placeholder.length() > 100) return false;
+		}
+		return true;
 	}
 
 }

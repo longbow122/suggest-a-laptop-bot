@@ -54,7 +54,7 @@ public class DiscordConfigurer {
                 .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setActivity(Activity.customStatus("Use /form for help!"))
-            .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties, formConfigurationProperties))
+            .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties, formConfigurationProperties, this))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
             .addEventListeners(new CopypastaModalListener(copypastaService, formConfigurationProperties, this))
             .addEventListeners(new FormSelectMenuListener(formConfigurationProperties))

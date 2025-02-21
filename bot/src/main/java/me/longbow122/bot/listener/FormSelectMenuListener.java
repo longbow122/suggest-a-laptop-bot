@@ -33,8 +33,8 @@ public class FormSelectMenuListener extends ListenerAdapter {
 		int[] questionMinLengths = {3, 1, 1, 1, 1};
 		int[] questionMaxLengths = {100, 100, 200, 300, 1000};
 		List<TextInput> inputs = new ArrayList<>();
-		List<String> questions = form.getQuestions();
-		List<String> placeholders = form.getPlaceholders();
+		List<String> questions = form.questions();
+		List<String> placeholders = form.placeholders();
 		for (int i = 0; i < questions.size(); i++) {
 			inputs.add(TextInput.create("question" + i, questions.get(i), TextInputStyle.PARAGRAPH)
 				.setPlaceholder(placeholders.get(i))

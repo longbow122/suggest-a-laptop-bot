@@ -72,16 +72,16 @@ public class CopypastaModalListener extends ListenerAdapter {
 		Set<String> formCategories = formConfigurationProperties.forms().keySet();
 		if (formCategories.contains(event.getModalId())) {
 			FormConfigurationProperties.Form form = formConfigurationProperties.forms().get(event.getModalId());
-			TextChannel formChannel = discordConfigurer.getJda().getTextChannelById(form.getFormChannel());
+			TextChannel formChannel = discordConfigurer.getJda().getTextChannelById(form.formChannel());
 			if (formChannel == null) {
 				event.reply("Something went wrong in finding the right form channel. Please contact longbow122!").setEphemeral(false).queue();
 				throw new ChannelNotFoundException("Form channel not found! Please check the right forms and see if the configuration is correct!");
 			}
 			List<String> potentialAnswers = new ArrayList<>();
-			for (int i = 0; i < form.getQuestions().size(); i++) {
+			for (int i = 0; i < form.questions().size(); i++) {
 				potentialAnswers.add(Objects.requireNonNull(event.getValue("question" + i)).getAsString());
 			}
-			formChannel.sendMessage(getFormattedForm(event.getUser(), form.getQuestions(), potentialAnswers)).queue();
+			formChannel.sendMessage(getFormattedForm(event.getUser(), form.questions(), potentialAnswers)).queue();
 			event.reply("Your form has been sent to the relevant channel! Please wait for a response!").setEphemeral(true).queue();
 		}
 	}
