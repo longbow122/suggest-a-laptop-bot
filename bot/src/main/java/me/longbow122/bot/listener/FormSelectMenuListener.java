@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -21,7 +22,8 @@ public class FormSelectMenuListener extends ListenerAdapter {
 	public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
 		if (event.getComponentId().equals("form-select")) {
 			String selectedOption = event.getInteraction().getValues().getFirst();
-			event.getInteraction().getMessage().editMessage("You have selected a form!").queue();
+			List<ItemComponent> disabledComponents = List.of(event.getComponent().asDisabled());
+			event.getMessage().editMessage(event.getMessage().getContentRaw()).setActionRow(disabledComponents).queue();
 			FormConfigurationProperties.Form foundForm = formConfigurationProperties.forms().get(selectedOption);
 			event.replyModal(getFormModal(selectedOption, foundForm)).queue();
 		}
@@ -36,10 +38,10 @@ public class FormSelectMenuListener extends ListenerAdapter {
 		for (int i = 0; i < questions.size(); i++) {
 			inputs.add(TextInput.create("question" + i, questions.get(i), TextInputStyle.PARAGRAPH)
 				.setPlaceholder(placeholders.get(i))
-				.setMaxLength(questionMinLengths[i]).setMaxLength(questionMaxLengths[i]).build());
+				.setMinLength(questionMinLengths[i]).setMaxLength(questionMaxLengths[i]).build());
 		}
-		return Modal.create(formCategory, "Get a laptop recommendation")
-			.addActionRow(inputs)
-			.build();
+		Modal.Builder modal = Modal.create(formCategory, "Get a laptop recommendation");
+		inputs.forEach(modal::addActionRow);
+		return modal.build();
 	}
 }

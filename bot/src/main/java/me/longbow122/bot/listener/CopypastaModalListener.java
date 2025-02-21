@@ -78,7 +78,7 @@ public class CopypastaModalListener extends ListenerAdapter {
 				throw new ChannelNotFoundException("Form channel not found! Please check the right forms and see if the configuration is correct!");
 			}
 			List<String> potentialAnswers = new ArrayList<>();
-			for (int i = 1; i <= form.getQuestions().size(); i++) {
+			for (int i = 0; i < form.getQuestions().size(); i++) {
 				potentialAnswers.add(Objects.requireNonNull(event.getValue("question" + i)).getAsString());
 			}
 			formChannel.sendMessage(getFormattedForm(event.getUser(), form.getQuestions(), potentialAnswers)).queue();

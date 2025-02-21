@@ -50,7 +50,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			return;
 		}
 		if (event.getFullCommandName().equals("form")) {
-			StringSelectMenu.Builder menu = StringSelectMenu.create("formMenu");
+			StringSelectMenu.Builder menu = StringSelectMenu.create("form-select");
 			Set<String> formCategories = formConfigurationProperties.forms().keySet();
 			for (String category : formCategories) {
 				char[] categoryCharacters = category.toCharArray();
@@ -58,9 +58,9 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 					if (i == 0) categoryCharacters[i] = Character.toUpperCase(categoryCharacters[i]);
 					else categoryCharacters[i] = Character.toLowerCase(categoryCharacters[i]);
 				}
-				menu.addOption(Arrays.toString(categoryCharacters), category);
+				menu.addOption(String.valueOf(categoryCharacters), category);
 			}
-			event.reply("Looking for a laptop reccommendation? Select a category below to get started!").addActionRow(menu.setMaxValues(1).build()).setEphemeral(true).queue();
+			event.reply("Looking for a laptop recommendation? Select a category below to get started!").addActionRow(menu.setMaxValues(1).build()).setEphemeral(true).queue();
 			return;
 		}
 
