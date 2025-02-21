@@ -1,14 +1,19 @@
 package me.longbow122.bot.listener;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import me.longbow122.bot.configuration.DiscordConfigurer;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.datamodel.repository.entities.Copypasta;
+import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.service.CopypastaService;
+import me.longbow122.bot.service.CopypastaUpdateType;
+import me.longbow122.datamodel.repository.entities.Copypasta;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -16,9 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionSystemException;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class SlashCopypastaCommandListener extends ListenerAdapter {
@@ -27,22 +30,22 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 
 	private final DiscordConfigurationProperties discordConfigurationProperties;
 
+	private final FormConfigurationProperties formConfigurationProperties;
+
+	private final DiscordConfigurer discordConfigurer;
+
 
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 		//Something bad must have happened for the guild to return null here.
 		if (event.getGuild() == null) return;
 		//* Standard Copypasta handling is here
-		List<Copypasta> pastas = copypastaService.findAllCopypasta();
-		if (pastas.stream().anyMatch(pasta -> pasta.getName().equals(event.getName()))) {
-			Optional<Copypasta> found = copypastaService.findCopypastaByName(event.getName());
-			if (found.isEmpty()) {
-				event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS, THE FOUND COPYPASTA WAS EMPTY! PLEASE CONTACT AN ADMINISTRATOR!").setEphemeral(false).queue();
-				return;
-			}
+		Optional<Copypasta> found = copypastaService.findCopypastaByName(event.getName());
+		if (found.isPresent()) {
 			event.reply(found.get().getMessage()).setEphemeral(false).queue();
 			return;
 		}
+
 		//* Worth noting that we are only checking cached members here, so need to ensure that members are cached properly when checking.
 		Member user = event.getGuild().getMemberById(event.getUser().getIdLong());
 		if (user == null) {
@@ -50,33 +53,20 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			return;
 		}
 		if (event.getFullCommandName().equals("form")) {
-			//TODO IMPLEMENT MODAL HERE FOR FORMS!
-			// THEN WE NEED TO TAKE QUESTIONS AND THE ANSWERS AND PUT THEM IN!
-			// NEED TO USE FORM SERVICE TO HANDLE THE POSTING SINCE THAT WILL HAVE EVERYTHING WE NEED
-			// CAN HARDCODE THE FORMDTO
-			TextInput questionOne = TextInput.create("question1", "What is your budget and country of purchase?", TextInputStyle.PARAGRAPH).setMinLength(3)
-				.setPlaceholder("Please make sure you give us the country you will be purchasing in!")
-				.setMaxLength(100).build();
-			TextInput questionTwo = TextInput.create("question2", "Are you open to refurbished/used laptops?", TextInputStyle.PARAGRAPH).setMinLength(1)
-				.setPlaceholder("Are you open to purchasing a refurbished/used laptop? If your budget is low, this may be required!")
-				.setMaxLength(100).build();
-			TextInput questionThree = TextInput.create("question3", "Do you have a preferred screen size?", TextInputStyle.PARAGRAPH)
-				.setPlaceholder("What size would you prefer? <13\", 13-14\", 15-16\", 17\"+. If indifferent, do not fill.")
-				.setRequired(false).setMinLength(1).setMaxLength(200).build();
-			TextInput questionFour = TextInput.create("question4", "Rank form, build, performance, battery", TextInputStyle.PARAGRAPH)
-				.setPlaceholder("Form factor, build quality, performance, and battery life. Rank these in order of preference!")
-				.setMinLength(1).setMaxLength(300).build();
-			TextInput questionFive = TextInput.create("question5", "What programs will you be running?", TextInputStyle.PARAGRAPH)
-				.setPlaceholder("Please name every program you want to run. We want the most intensive thing you do on this laptop!")
-				.setRequired(false).setMinLength(1).setMaxLength(1000).build();
-			Modal modal = Modal.create("formSend", "Get a laptop recommendation")
-				.addActionRow(questionOne)
-				.addActionRow(questionTwo)
-				.addActionRow(questionThree)
-				.addActionRow(questionFour)
-				.addActionRow(questionFive)
-				.build();
-			event.replyModal(modal).queue();
+			StringSelectMenu.Builder menu = StringSelectMenu.create("form-select");
+			Map<String, FormConfigurationProperties.Form> forms = formConfigurationProperties.forms();
+			for (Map.Entry<String, FormConfigurationProperties.Form> entry : forms.entrySet()) {
+				//TODO NEED TO PROVIDE LOGGING INFORMATION WHEN IMPLEMENTED HERE!
+				// WE NEED TO ENSURE THAT WE KNOW WHICH FORM IS INVALID AND FOR WHAT REASON!
+				if (!isFormValid(entry.getValue())) continue;
+				char[] categoryCharacters = entry.getKey().toCharArray();
+				for (int i = 0; i < categoryCharacters.length; i++) {
+					if (i == 0) categoryCharacters[i] = Character.toUpperCase(categoryCharacters[i]);
+					else categoryCharacters[i] = Character.toLowerCase(categoryCharacters[i]);
+				}
+				menu.addOption(String.valueOf(categoryCharacters), entry.getKey());
+			}
+			event.reply("Looking for a laptop recommendation? Select a category below to get started!").addActionRow(menu.setMaxValues(1).build()).setEphemeral(true).queue();
 			return;
 		}
 
@@ -127,42 +117,18 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				String nameEntered = event.getOption("name").getAsString();
 				String fieldEntered = event.getOption("field").getAsString();
 				String valueEntered = event.getOption("value").getAsString();
-				List<String> fieldVals = Arrays.asList("name", "description", "message");
+				Set<String> fieldVals = new HashSet<>(List.of("name", "description", "message"));
 				if (!(fieldVals.contains(fieldEntered))) {
 					event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
 					return;
 				}
 				try {
-					switch (fieldEntered) {
-						case "name": {
-							if (!validateName(valueEntered)) {
-								event.reply("Looks like the name you entered was invalid. Please use a valid name when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
-								return;
-							}
-							copypastaService.updateCopypastaName(nameEntered, valueEntered);
-							break;
-						}
-						case "description": {
-							if (!validateDescription(valueEntered)) {
-								event.reply("Looks like the description you entered was invalid. Please use a valid description when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
-								return;
-							}
-							copypastaService.updateCopypastaDescription(nameEntered, valueEntered);
-							break;
-						}
-						case "message": {
-							if (!validateMessage(valueEntered)) {
-								event.reply("Looks like the message you entered was invalid. Please use a valid message when updating the copypasta **" + nameEntered + "**").setEphemeral(true).queue();
-								return;
-							}
-							copypastaService.updateCopypastaMessage(nameEntered, valueEntered);
-							break;
-						}
-						default: {
-							event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
-							return;
-						}
+					Set<String> fields = new HashSet<>(Arrays.asList("name", "description", "message"));
+					if (!fields.contains(fieldEntered)) {
+						event.reply("Looks like a field with that name does NOT exist. Try updating a field that exists.").setEphemeral(true).queue();
+						return;
 					}
+					copypastaService.updateCopypasta(nameEntered, CopypastaUpdateType.valueOf(fieldEntered.toUpperCase()), valueEntered);
 					String toSend = "Copypasta successfully updated! \n Name: **" + nameEntered + "** \n Field: **" + fieldEntered + "** \n Value: **" + valueEntered + "**";
 					if (toSend.length() > 2000) {
 						event.reply("Copypasta successfully updated! \n **Name:** " + nameEntered + "\n **Field:** " + fieldEntered + "**Message:** \n").setEphemeral(true).queue();
@@ -172,7 +138,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 					event.reply(toSend).setEphemeral(true).queue();
 				} catch (EntityNotFoundException e) {
 					event.reply("Looks like a command with that name does NOT exist. Try updating a copypasta that exists.").setEphemeral(true).queue();
-				} catch (DataIntegrityViolationException | TransactionSystemException e) {
+				} catch (DataIntegrityViolationException | TransactionSystemException | EntityExistsException e) {
 					event.reply("The field you tried updating did not adhere to the constraints of Copypastas! \n Names must be between 1-32 lowercase characters, with no numbers and no whitespaces and **unique**. \n Descriptions must be between 1-100 characters. \n Messages must be between 1-2000 characters.").setEphemeral(true).queue();
 				}
 				return;
@@ -183,19 +149,18 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 		}
 	}
 
-	private boolean validateName(String name) {
-		if (name.isBlank() || name.length() > 32) return false;
-		for (char i : name.toCharArray()) {
-			if(!(Character.isLowerCase(i)) || !(Character.isAlphabetic(i)) || i == ' ') return false;
+	private boolean isFormValid(FormConfigurationProperties.Form form) {
+		if (form.questions().size() > 5 || form.placeholders().size() > 5 || form.questions().size() != form.placeholders().size() ||
+			discordConfigurer.getJda().getTextChannelById(form.formChannel()) == null) return false;
+
+		for (String question : form.questions()) {
+			if (question.isBlank() || question.length() > 45) return false;
+		}
+
+		for (String placeholder : form.placeholders()) {
+			if (placeholder.isBlank() || placeholder.length() > 100) return false;
 		}
 		return true;
 	}
 
-	private boolean validateDescription(String description) {
-		return !description.isBlank() && description.length() <= 100;
-	}
-
-	private boolean validateMessage(String message) {
-		return !message.isBlank() && message.length() <= 2000;
-	}
 }

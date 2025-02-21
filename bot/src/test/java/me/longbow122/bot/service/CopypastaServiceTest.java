@@ -1,6 +1,7 @@
 package me.longbow122.bot.service;
 
 import com.googlecode.catchexception.apis.BDDCatchException;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import me.longbow122.bot.dto.mapper.CopypastaMapper;
 import me.longbow122.datamodel.repository.CopypastaRepository;
@@ -164,59 +165,59 @@ public class CopypastaServiceTest {
 		@Test
 		void testUpdateName_shouldPass() {
 			// ? Test that updating a Copypasta name works
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
-			Copypasta updated = new Copypasta("newName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
+			Copypasta updated = new Copypasta("newname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(updated);
 
-			copypastaService.updateCopypastaName("testName", "newName");
+			copypastaService.updateCopypasta("testname", CopypastaUpdateType.NAME, "newname");
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			verify(copypastaRepository).save(argThat(copypasta -> copypasta.getName().equals("newName")));
+			verify(copypastaRepository).findCopypastaByName("testname");
+			verify(copypastaRepository).save(argThat(copypasta -> copypasta.getName().equals("newname")));
 		}
 
 		@Test
 		void testUpdateNameToExistingPrimaryKey_shouldFail() {
 			// ? Test that updating a Copypasta name to an existing primary key does not work under the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
+			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(EntityExistsException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("testName", "testName"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.NAME, "testname"));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
+			verify(copypastaRepository).findCopypastaByName("testname");
+			then(caughtException()).isInstanceOf(EntityExistsException.class);
 		}
 
 		@Test
 		void testUpdateDescription_shouldPass() {
 			// ? Test that updating a Copypasta description works
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
-			Copypasta updated = new Copypasta("testName", "newDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
+			Copypasta updated = new Copypasta("testname", "newDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(updated);
 
-			copypastaService.updateCopypastaDescription("testName", "newDescription");
+			copypastaService.updateCopypasta("testname", CopypastaUpdateType.DESCRIPTION, "newDescription");
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			verify(copypastaRepository).save(argThat(copypasta -> copypasta.getDescription().equals("newDescription")));
 		}
 
 		@Test
 		void testUpdateMessage_shouldPass() {
 			// ? Test that updating a Copypasta message works
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
-			Copypasta updated = new Copypasta("testName", "testDescription", "newMessage");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
+			Copypasta updated = new Copypasta("testname", "testDescription", "newMessage");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenReturn(updated);
 
-			copypastaService.updateCopypastaMessage("testName", "newMessage");
+			copypastaService.updateCopypasta("testname", CopypastaUpdateType.MESSAGE, "newMessage");
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			verify(copypastaRepository).save(argThat(copypasta -> copypasta.getMessage().equals("newMessage")));
 		}
 
@@ -224,29 +225,29 @@ public class CopypastaServiceTest {
 		@Test
 		void testEmptyNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to an empty name does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(TransactionSystemException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
+			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("testName", ""));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.NAME, ""));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			then(caughtException()).isInstanceOf(TransactionSystemException.class);
+			verify(copypastaRepository).findCopypastaByName("testname");
+			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 
 		@Test
 		void testLargeNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a name that is too large does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("testName", repeatString('a', 55)));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.NAME, repeatString('a', 55)));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
@@ -254,149 +255,143 @@ public class CopypastaServiceTest {
 		@Test
 		void testNullNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a null name does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(TransactionSystemException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("testName", null));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.NAME, null));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
 			then(caughtException()).isInstanceOf(TransactionSystemException.class);
 		}
 
 		@Test
 		void testWhitespaceNameUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a whitespace name does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(TransactionSystemException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
+			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("testName", " "));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.NAME, " "));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			then(caughtException()).isInstanceOf(TransactionSystemException.class);
+			verify(copypastaRepository).findCopypastaByName("testname");
+			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testEmptyDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to an empty description does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(TransactionSystemException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
+			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription("testName", ""));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.DESCRIPTION, ""));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			then(caughtException()).isInstanceOf(TransactionSystemException.class);
+			verify(copypastaRepository).findCopypastaByName("testname");
+			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testLargeDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a description that is too large does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription("testName", repeatString('b', 150)));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.DESCRIPTION, repeatString('b', 150)));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testNullDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a null description does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription("testName", null));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.DESCRIPTION, null));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
+			then(caughtException()).isInstanceOf(TransactionSystemException.class);
 		}
 
 		@Test
 		void testWhitespaceDescriptionUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a whitespace description does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription("testName", " "));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.DESCRIPTION, " "));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testEmptyMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to an empty message does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage("testName", ""));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.MESSAGE, ""));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testLargeMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a message that is too large does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage("testName", repeatString('c', 3000)));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.MESSAGE, repeatString('c', 3000)));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
+			verify(copypastaRepository).findCopypastaByName("testname");
 			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testNullMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a null message does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(TransactionSystemException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage("testName", null));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.MESSAGE, null));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
 			then(caughtException()).isInstanceOf(TransactionSystemException.class);
 		}
 
 		@Test
 		void testWhitespaceMessageUpdate_shouldFail() {
 			// ? Test that updating a Copypasta to a whitespace message does not work with the constraints
-			Copypasta original = new Copypasta("testName", "testDescription", "This is a message");
+			Copypasta original = new Copypasta("testname", "testDescription", "This is a message");
 
-			when(copypastaRepository.findCopypastaByName("testName")).thenReturn(Optional.of(original));
-			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(TransactionSystemException.class);
+			when(copypastaRepository.findCopypastaByName("testname")).thenReturn(Optional.of(original));
+			when(copypastaRepository.save(any(Copypasta.class))).thenThrow(DataIntegrityViolationException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage("testName", " "));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("testname", CopypastaUpdateType.MESSAGE, " "));
 
-			verify(copypastaRepository).findCopypastaByName("testName");
-			then(caughtException()).isInstanceOf(TransactionSystemException.class);
+			verify(copypastaRepository).findCopypastaByName("testname");
+			then(caughtException()).isInstanceOf(DataIntegrityViolationException.class);
 		}
 
 		@Test
 		void testUpdateNameNameNotExists_shouldFail() {
-			// ? Test that trying to update a Copypasta message with a name that does not exist fails properly
+			// ? Test that trying to update a Copypasta name with a name that does not exist fails properly
 			when(copypastaRepository.findCopypastaByName("notExists")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("notExists", "newName"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("notExists", CopypastaUpdateType.NAME, "newname"));
 
 			verify(copypastaRepository).findCopypastaByName("notExists");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -408,7 +403,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta description with a name that does not exist fails properly
 			when(copypastaRepository.findCopypastaByName("notExists")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription("notExists", "newDescription"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("notExists", CopypastaUpdateType.DESCRIPTION, "newDescription"));
 
 			verify(copypastaRepository).findCopypastaByName("notExists");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -419,7 +414,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta message with a name that does not exist fails properly
 			when(copypastaRepository.findCopypastaByName("notExists")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage("notExists", "newMessage"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("notExists", CopypastaUpdateType.MESSAGE, "newMessage"));
 
 			verify(copypastaRepository).findCopypastaByName("notExists");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -430,7 +425,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta name with a name that is null fails properly
 			when(copypastaRepository.findCopypastaByName(null)).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName(null, "newName"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta(null, CopypastaUpdateType.NAME, "newname"));
 
 			verify(copypastaRepository).findCopypastaByName(null);
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -441,7 +436,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to upddate a Copypasta description with a name that is null fails properly
 			when(copypastaRepository.findCopypastaByName(null)).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription(null, "newDescription"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta(null, CopypastaUpdateType.DESCRIPTION, "newDescription"));
 
 			verify(copypastaRepository).findCopypastaByName(null);
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -452,7 +447,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta message with a name that is null fails properly
 			when(copypastaRepository.findCopypastaByName(null)).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage(null, "newMessage"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta(null, CopypastaUpdateType.MESSAGE, "newMessage"));
 
 			verify(copypastaRepository).findCopypastaByName(null);
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -463,7 +458,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta name with a name that is empty fails properly
 			when(copypastaRepository.findCopypastaByName("")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName("", "newName"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("", CopypastaUpdateType.NAME, "newname"));
 
 			verify(copypastaRepository).findCopypastaByName("");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -474,7 +469,7 @@ public class CopypastaServiceTest {
 			// ? test that trying to update a Copypasta description with a name that is empty fails properly
 			when(copypastaRepository.findCopypastaByName("")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription("", "newDescription"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("", CopypastaUpdateType.DESCRIPTION, "newDescription"));
 
 			verify(copypastaRepository).findCopypastaByName("");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -485,7 +480,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta message with a name that is empty fails properly
 			when(copypastaRepository.findCopypastaByName("")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage("", "newMessage"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta("", CopypastaUpdateType.MESSAGE, "newMessage"));
 
 			verify(copypastaRepository).findCopypastaByName("");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -496,7 +491,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta name with a name that is a whitespace fails properly
 			when(copypastaRepository.findCopypastaByName(" ")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaName(" ", "newName"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta(" ", CopypastaUpdateType.NAME, "newname"));
 
 			verify(copypastaRepository).findCopypastaByName(" ");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -507,7 +502,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta description with a name that is a whitespace fails properly
 			when(copypastaRepository.findCopypastaByName(" ")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaDescription(" ", "newDescription"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta(" ", CopypastaUpdateType.DESCRIPTION, "newDescription"));
 
 			verify(copypastaRepository).findCopypastaByName(" ");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);
@@ -518,7 +513,7 @@ public class CopypastaServiceTest {
 			// ? Test that trying to update a Copypasta message with a name that is a whitespace fails properly
 			when(copypastaRepository.findCopypastaByName(" ")).thenThrow(EntityNotFoundException.class);
 
-			BDDCatchException.when(() -> copypastaService.updateCopypastaMessage(" ", "newName"));
+			BDDCatchException.when(() -> copypastaService.updateCopypasta(" ", CopypastaUpdateType.MESSAGE, "newMessage"));
 
 			verify(copypastaRepository).findCopypastaByName(" ");
 			then(caughtException()).isInstanceOf(EntityNotFoundException.class);

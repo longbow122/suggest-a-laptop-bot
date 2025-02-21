@@ -3,11 +3,13 @@ package me.longbow122.bot.configuration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.datamodel.repository.entities.Copypasta;
+import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.listener.CopypastaAutocompleteListener;
 import me.longbow122.bot.listener.CopypastaModalListener;
+import me.longbow122.bot.listener.FormSelectMenuListener;
 import me.longbow122.bot.listener.SlashCopypastaCommandListener;
 import me.longbow122.bot.service.CopypastaService;
+import me.longbow122.datamodel.repository.entities.Copypasta;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -32,13 +34,16 @@ public class DiscordConfigurer {
 
     private final CopypastaService copypastaService;
 
+    private final FormConfigurationProperties formConfigurationProperties;
+
     @Getter
     private JDA jda;
 
     @Autowired
-    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService) {
+    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService, FormConfigurationProperties formConfigurationProperties) {
         this.discordConfigurationProperties = discordConfigurationProperties;
         this.copypastaService = copypastaService;
+        this.formConfigurationProperties = formConfigurationProperties;
     }
 
     @Bean
@@ -49,9 +54,10 @@ public class DiscordConfigurer {
                 .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setActivity(Activity.customStatus("Use /form for help!"))
-                .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
+            .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties, formConfigurationProperties, this))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
-                .addEventListeners(new CopypastaModalListener(copypastaService, this))
+            .addEventListeners(new CopypastaModalListener(copypastaService, formConfigurationProperties, this))
+            .addEventListeners(new FormSelectMenuListener(formConfigurationProperties))
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();
