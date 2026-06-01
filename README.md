@@ -34,7 +34,7 @@ Depending on whether the branch is a minor change, major change, or a bug fix, t
 See below for some examples:
 ```text
 minor/implement-configuration
-major/rework-data-model
+major/rework-storage
 patch/fix-bug-in-command-handler
 ```
 When making a pull request, I ask that your branches be named so, where applicable.

@@ -29,8 +29,6 @@ jobs:
           make_latest: true
           tag_name: ${{ github.ref_name}}${{github.run_id}}
           files: |
-            api/target/suggest-a-laptop-bot-api-1.0.0.jar
-            bot/target/suggest-a-laptop-bot-bot-1.0.0.jar
-            data-model/target/suggest-a-laptop-bot-data-model-1.0.0.jar
+            target/suggest-a-laptop-bot-1.0.0.jar
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@v4.1.1

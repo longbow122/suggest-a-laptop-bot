@@ -6,13 +6,9 @@
 version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
-    # Locations of package manifests. This is searching the root directory, and all current modules of this project for pom.xmls.
-    # You will need to update this every time a module is added or removed.
+    # The project now builds as a single Maven module from the repository root.
     directories:
       - "/"
-      - "/api"
-      - "/bot"
-      - "/data-model"
     schedule:
       interval: "weekly"
     commit-message:
