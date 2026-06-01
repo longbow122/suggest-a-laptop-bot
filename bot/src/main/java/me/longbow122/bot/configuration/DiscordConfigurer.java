@@ -3,11 +3,11 @@ package me.longbow122.bot.configuration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.datamodel.repository.entities.Copypasta;
 import me.longbow122.bot.listener.CopypastaAutocompleteListener;
 import me.longbow122.bot.listener.CopypastaModalListener;
 import me.longbow122.bot.listener.SlashCopypastaCommandListener;
 import me.longbow122.bot.service.CopypastaService;
+import me.longbow122.datamodel.repository.entities.Copypasta;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -51,11 +51,12 @@ public class DiscordConfigurer {
                 .setActivity(Activity.customStatus("Use /form for help!"))
                 .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
-                .addEventListeners(new CopypastaModalListener(copypastaService))
+                .addEventListeners(new CopypastaModalListener(copypastaService, this))
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();
         CommandListUpdateAction commands = jdaBuild.updateCommands();
+        //TODO: If more than 100 slash commands get registered, then this will throw an error. Can we catch this and surface such an error
         pastas.forEach(copypasta -> commands.addCommands(Commands.slash(copypasta.getName(), copypasta.getDescription())
             .setGuildOnly(true)));
 
@@ -68,6 +69,8 @@ public class DiscordConfigurer {
                 .addOption(OptionType.STRING, "name", "The current name of the copypasta command to be updated. REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "field", "The field to update. (Name, Description, Message). REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "value", "The new value of the field. REQUIRED.", true)));
+
+        commands.addCommands(Commands.slash("form", "Get a laptop recommendation here!"));
         commands.queue();
         jdaBuild.awaitReady();
         this.jda = jdaBuild;
