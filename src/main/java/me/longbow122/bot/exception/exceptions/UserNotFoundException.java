@@ -1,8 +1,8 @@
 package me.longbow122.bot.exception.exceptions;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.NoSuchElementException;
 
-public class UserNotFoundException extends EntityNotFoundException {
+public class UserNotFoundException extends NoSuchElementException {
 	public UserNotFoundException(String message) {
 		super(message);
 	}

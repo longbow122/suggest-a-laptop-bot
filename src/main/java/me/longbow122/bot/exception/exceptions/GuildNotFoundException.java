@@ -1,8 +1,8 @@
 package me.longbow122.bot.exception.exceptions;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.NoSuchElementException;
 
-public class GuildNotFoundException extends EntityNotFoundException {
+public class GuildNotFoundException extends NoSuchElementException {
 	public GuildNotFoundException(String message) {
 		super(message);
 	}

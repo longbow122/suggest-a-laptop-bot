@@ -1,12 +1,26 @@
 # SuggestALaptop Bot - A Discord Bot
 This discord bot was written for [SuggestALaptop](https://discord.gg/r9R7T4Qg5A), and is used to aid those looking for a recommendation
 in receiving a laptop recommendation. This bot also contains several other utility features for the SuggestALaptop discord server.
-This bot was written in Java using [JDA](https://github.com/discord-jda/JDA) to interact with Discord's API, along with [Spring](https://spring.io/) to allow
-for better software development standards, along with implementing RESTful endpoints.
+This bot was written in Java using [JDA](https://github.com/discord-jda/JDA) to interact with Discord's API, with a
+small manual bootstrap and
+configuration layer.
 
 ## Documentation
 This project has not yet been documented, but once this bot has been developed to the point where it can be considered "complete",
 detailed documentation and video documentation regarding the use and configuration of the bot will be released.
+
+## Configuration
+
+Set Discord configuration through environment variables or command-line properties:
+
+```text
+DISCORD_BOT_TOKEN=...
+DISCORD_COPYPASTA_ROLE_ID=...
+DISCORD_ADMIN_ROLE_ID=...
+```
+
+Database defaults live in `src/main/resources/application.properties` and can be overridden with `DATABASE_URL`,
+`DATABASE_USERNAME`, and `DATABASE_PASSWORD`.
 
 ## Maintenance
 This project is solely maintained by [longbow122](https://github.com/longbow122), but has been left as an open source repo

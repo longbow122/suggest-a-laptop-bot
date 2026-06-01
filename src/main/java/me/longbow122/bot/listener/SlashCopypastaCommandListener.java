@@ -1,9 +1,7 @@
 package me.longbow122.bot.listener;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
+import me.longbow122.bot.configuration.DiscordConfiguration;
 import me.longbow122.bot.repository.entities.Copypasta;
 import me.longbow122.bot.service.CopypastaService;
 import me.longbow122.bot.service.CopypastaUpdateType;
@@ -15,8 +13,6 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.TransactionSystemException;
 
 import java.util.*;
 
@@ -25,7 +21,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 
 	private final CopypastaService copypastaService;
 
-	private final DiscordConfigurationProperties discordConfigurationProperties;
+	private final DiscordConfiguration discordConfiguration;
 
 
 	@Override
@@ -45,8 +41,8 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS. WE COULD NOT FIND A USER!").setEphemeral(false).queue();
 			return;
 		}
-		Role copypastaRole = event.getGuild().getRoleById(discordConfigurationProperties.copypastaRoleID());
-		Role adminRole = event.getGuild().getRoleById(discordConfigurationProperties.adminRoleID());
+		Role copypastaRole = event.getGuild().getRoleById(discordConfiguration.copypastaRoleID());
+		Role adminRole = event.getGuild().getRoleById(discordConfiguration.adminRoleID());
 		//* You need to have the copypasta role to be able to work with copypasta commands.
 		if (!(user.getRoles().contains(copypastaRole))) {
 			event.reply("You do not have permissions to use that command! You need " + copypastaRole.getName()).setEphemeral(true).queue();
@@ -78,7 +74,7 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 					copypastaService.deleteCopypasta(event.getOption("name").getAsString());
 					event.reply("Successfully deleted copypasta with name: " + event.getOption("name").getAsString()).setEphemeral(false).queue();
 					return;
-				} catch (EntityNotFoundException e) {
+				} catch (NoSuchElementException e) {
 					event.reply("Looks like a command with that name does NOT exist. Try deleting a copypasta that exists.").setEphemeral(true).queue();
 					return;
 				}
@@ -111,9 +107,9 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 						return;
 					}
 					event.reply(toSend).setEphemeral(true).queue();
-				} catch (EntityNotFoundException e) {
+				} catch (NoSuchElementException e) {
 					event.reply("Looks like a command with that name does NOT exist. Try updating a copypasta that exists.").setEphemeral(true).queue();
-				} catch (DataIntegrityViolationException | TransactionSystemException | EntityExistsException e) {
+				} catch (IllegalArgumentException | IllegalStateException e) {
 					event.reply("The field you tried updating did not adhere to the constraints of Copypastas! \n Names must be between 1-32 lowercase characters, with no numbers and no whitespaces and **unique**. \n Descriptions must be between 1-100 characters. \n Messages must be between 1-2000 characters.").setEphemeral(true).queue();
 				}
 				return;

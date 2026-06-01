@@ -2,7 +2,6 @@ package me.longbow122.bot.configuration;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
 import me.longbow122.bot.listener.CopypastaAutocompleteListener;
 import me.longbow122.bot.listener.CopypastaModalListener;
 import me.longbow122.bot.listener.SlashCopypastaCommandListener;
@@ -17,39 +16,31 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.util.List;
 
 @Slf4j
-@Configuration
 public class DiscordConfigurer {
 
-    private final DiscordConfigurationProperties discordConfigurationProperties;
+    private final DiscordConfiguration discordConfiguration;
 
     private final CopypastaService copypastaService;
 
     @Getter
     private JDA jda;
 
-    @Autowired
-    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService) {
-        this.discordConfigurationProperties = discordConfigurationProperties;
+    public DiscordConfigurer(DiscordConfiguration discordConfiguration, CopypastaService copypastaService) {
+        this.discordConfiguration = discordConfiguration;
         this.copypastaService = copypastaService;
     }
 
-    @Bean
-    @Profile("!test")
-    public JDA jda() throws InterruptedException {
+    public JDA start() throws InterruptedException {
         JDA jdaBuild = JDABuilder
-                .createDefault(discordConfigurationProperties.botToken())
+          .createDefault(discordConfiguration.botToken())
                 .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
           .setActivity(Activity.customStatus("Suggesting Laptops!"))
-          .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
+          .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfiguration))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
           .addEventListeners(new CopypastaModalListener(copypastaService))
                 .build();

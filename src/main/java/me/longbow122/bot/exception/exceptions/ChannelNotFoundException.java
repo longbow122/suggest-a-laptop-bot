@@ -1,8 +1,8 @@
 package me.longbow122.bot.exception.exceptions;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.NoSuchElementException;
 
-public class ChannelNotFoundException extends EntityNotFoundException {
+public class ChannelNotFoundException extends NoSuchElementException {
 	public ChannelNotFoundException(String message) {
 		super(message);
 	}

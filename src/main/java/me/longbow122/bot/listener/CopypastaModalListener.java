@@ -1,9 +1,8 @@
 package me.longbow122.bot.listener;
 
-import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.longbow122.bot.dto.CopypastaDTO;
+import me.longbow122.bot.repository.entities.Copypasta;
 import me.longbow122.bot.service.CopypastaService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -34,7 +33,7 @@ public class CopypastaModalListener extends ListenerAdapter {
 			String descriptionEntered = Objects.requireNonNull(event.getValue("description")).getAsString();
 			String messageEntered = Objects.requireNonNull(event.getValue("message")).getAsString();
 			try {
-				CopypastaDTO added = new CopypastaDTO(nameEntered, descriptionEntered, messageEntered);
+				Copypasta added = new Copypasta(nameEntered, descriptionEntered, messageEntered);
 				copypastaService.createCopypasta(added);
 				if (messageEntered.length() > 1024) {
 					event.reply("Copypasta added successfully! \n **Name:** " + nameEntered + " \n **Description:** " + descriptionEntered + "\n **Message:** \n").queue();
@@ -46,7 +45,7 @@ public class CopypastaModalListener extends ListenerAdapter {
 			} catch (IllegalArgumentException e) {
 				event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(e.getMessage()).queue());
 				return;
-			} catch (EntityExistsException e) {
+			} catch (IllegalStateException e) {
 				String toSend = "Looks like a command with that name already exists. Try again. \n Name: **" + nameEntered + "**\n Message: **" + messageEntered + "**" + "\n Description: **" + descriptionEntered + "**";
 				if (toSend.length() > 2000) {
 					event.getUser().openPrivateChannel().queue(channel -> channel.sendMessage("Looks like a command with that name already exists. Try again. \n Name: **" + nameEntered + "**\n Description: **" + descriptionEntered + "**\n Message: \n").queue());
