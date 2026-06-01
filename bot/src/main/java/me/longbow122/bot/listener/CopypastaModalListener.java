@@ -92,6 +92,9 @@ public class CopypastaModalListener extends ListenerAdapter {
 	//TODO THIS IS A VERY TEMPORARY METHOD THAT NEEDS TO BE REMOVED AND MASSIVELY REWORKED IF THIS POC ENDS UP
 	//  GOING THROUGH. NEED TO REMOVE THE USE OF FORMS, NEED TO REMOVE THE USE OF THE API, ETC.
 
+	//TODO It is likely that a very big refactor will be required to go through and fix this repository to make things working much simpler.
+	// If we are going the route of implementing forms as modals, then there is no need for Spring entirely, meaning we can merge all of this work into a single module and use something else to deal with databases
+
 	private String postForm(User user, FormDTO form) {
 		List<String> questions = form.questions();
 		List<String> answers = form.answers();
