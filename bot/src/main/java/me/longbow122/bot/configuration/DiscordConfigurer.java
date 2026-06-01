@@ -3,10 +3,8 @@ package me.longbow122.bot.configuration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.listener.CopypastaAutocompleteListener;
 import me.longbow122.bot.listener.CopypastaModalListener;
-import me.longbow122.bot.listener.FormSelectMenuListener;
 import me.longbow122.bot.listener.SlashCopypastaCommandListener;
 import me.longbow122.bot.service.CopypastaService;
 import me.longbow122.datamodel.repository.entities.Copypasta;
@@ -34,16 +32,13 @@ public class DiscordConfigurer {
 
     private final CopypastaService copypastaService;
 
-    private final FormConfigurationProperties formConfigurationProperties;
-
     @Getter
     private JDA jda;
 
     @Autowired
-    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService, FormConfigurationProperties formConfigurationProperties) {
+    public DiscordConfigurer(DiscordConfigurationProperties discordConfigurationProperties, CopypastaService copypastaService) {
         this.discordConfigurationProperties = discordConfigurationProperties;
         this.copypastaService = copypastaService;
-        this.formConfigurationProperties = formConfigurationProperties;
     }
 
     @Bean
@@ -53,11 +48,10 @@ public class DiscordConfigurer {
                 .createDefault(discordConfigurationProperties.botToken())
                 .enableIntents(List.of(GatewayIntent.GUILD_MEMBERS))
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .setActivity(Activity.customStatus("Use /form for help!"))
-            .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties, formConfigurationProperties, this))
+          .setActivity(Activity.customStatus("Suggesting Laptops!"))
+          .addEventListeners(new SlashCopypastaCommandListener(copypastaService, discordConfigurationProperties))
                 .addEventListeners(new CopypastaAutocompleteListener(copypastaService))
-            .addEventListeners(new CopypastaModalListener(copypastaService, formConfigurationProperties, this))
-            .addEventListeners(new FormSelectMenuListener(formConfigurationProperties))
+          .addEventListeners(new CopypastaModalListener(copypastaService))
                 .build();
 
         List<Copypasta> pastas = copypastaService.findAllCopypasta();
@@ -74,8 +68,6 @@ public class DiscordConfigurer {
                 .addOption(OptionType.STRING, "name", "The current name of the copypasta command to be updated. REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "field", "The field to update. (Name, Description, Message). REQUIRED.", true, true)
                 .addOption(OptionType.STRING, "value", "The new value of the field. REQUIRED.", true)));
-
-        commands.addCommands(Commands.slash("form", "Get a laptop recommendation here!"));
         commands.queue();
         jdaBuild.awaitReady();
         this.jda = jdaBuild;

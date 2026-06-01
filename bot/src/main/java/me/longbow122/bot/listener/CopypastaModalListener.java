@@ -3,34 +3,22 @@ package me.longbow122.bot.listener;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.longbow122.bot.configuration.DiscordConfigurer;
-import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.dto.CopypastaDTO;
-import me.longbow122.bot.exception.exceptions.ChannelNotFoundException;
 import me.longbow122.bot.service.CopypastaService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CopypastaModalListener extends ListenerAdapter {
 
 	private final CopypastaService copypastaService;
-
-	private final FormConfigurationProperties formConfigurationProperties;
-
-	private final DiscordConfigurer discordConfigurer;
 
 	/*
 	* We do not get exceptions or much control over invalid input at the Modal layer, so a lot of this validation does not end up triggering.
@@ -69,32 +57,6 @@ public class CopypastaModalListener extends ListenerAdapter {
 				return;
 			}
 		}
-		Set<String> formCategories = formConfigurationProperties.forms().keySet();
-		if (formCategories.contains(event.getModalId())) {
-			FormConfigurationProperties.Form form = formConfigurationProperties.forms().get(event.getModalId());
-			TextChannel formChannel = discordConfigurer.getJda().getTextChannelById(form.formChannel());
-			if (formChannel == null) {
-				event.reply("Something went wrong in finding the right form channel. Please contact longbow122!").setEphemeral(false).queue();
-				throw new ChannelNotFoundException("Form channel not found! Please check the right forms and see if the configuration is correct!");
-			}
-			List<String> potentialAnswers = new ArrayList<>();
-			for (int i = 0; i < form.questions().size(); i++) {
-				potentialAnswers.add(Objects.requireNonNull(event.getValue("question" + i)).getAsString());
-			}
-			formChannel.sendMessage(getFormattedForm(event.getUser(), form.questions(), potentialAnswers)).queue();
-			event.reply("Your form has been sent to the relevant channel! Please wait for a response!").setEphemeral(true).queue();
-		}
-	}
-
-	private String getFormattedForm(User user, List<String> questions, List<String> answers) {
-		StringBuilder formattedForm = new StringBuilder();
-		for (int index = 0; index < questions.size(); index++) {
-			formattedForm.append("**").append(questions.get(index)).append("**");
-			formattedForm.append("\n");
-			formattedForm.append(answers.get(index)).append("\n");
-		}
-		formattedForm.append("**Posted by: **").append(user.getAsMention());
-		return formattedForm.toString();
 	}
 
 

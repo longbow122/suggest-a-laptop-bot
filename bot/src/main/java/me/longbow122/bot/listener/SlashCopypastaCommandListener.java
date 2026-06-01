@@ -3,9 +3,7 @@ package me.longbow122.bot.listener;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import me.longbow122.bot.configuration.DiscordConfigurer;
 import me.longbow122.bot.configuration.properties.DiscordConfigurationProperties;
-import me.longbow122.bot.configuration.properties.FormConfigurationProperties;
 import me.longbow122.bot.service.CopypastaService;
 import me.longbow122.bot.service.CopypastaUpdateType;
 import me.longbow122.datamodel.repository.entities.Copypasta;
@@ -13,7 +11,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -29,10 +26,6 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 	private final CopypastaService copypastaService;
 
 	private final DiscordConfigurationProperties discordConfigurationProperties;
-
-	private final FormConfigurationProperties formConfigurationProperties;
-
-	private final DiscordConfigurer discordConfigurer;
 
 
 	@Override
@@ -52,24 +45,6 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 			event.reply("SOMETHING HAS GONE WRONG WITH COPYPASTA COMMANDS. WE COULD NOT FIND A USER!").setEphemeral(false).queue();
 			return;
 		}
-		if (event.getFullCommandName().equals("form")) {
-			StringSelectMenu.Builder menu = StringSelectMenu.create("form-select");
-			Map<String, FormConfigurationProperties.Form> forms = formConfigurationProperties.forms();
-			for (Map.Entry<String, FormConfigurationProperties.Form> entry : forms.entrySet()) {
-				//TODO NEED TO PROVIDE LOGGING INFORMATION WHEN IMPLEMENTED HERE!
-				// WE NEED TO ENSURE THAT WE KNOW WHICH FORM IS INVALID AND FOR WHAT REASON!
-				if (!isFormValid(entry.getValue())) continue;
-				char[] categoryCharacters = entry.getKey().toCharArray();
-				for (int i = 0; i < categoryCharacters.length; i++) {
-					if (i == 0) categoryCharacters[i] = Character.toUpperCase(categoryCharacters[i]);
-					else categoryCharacters[i] = Character.toLowerCase(categoryCharacters[i]);
-				}
-				menu.addOption(String.valueOf(categoryCharacters), entry.getKey());
-			}
-			event.reply("Looking for a laptop recommendation? Select a category below to get started!").addActionRow(menu.setMaxValues(1).build()).setEphemeral(true).queue();
-			return;
-		}
-
 		Role copypastaRole = event.getGuild().getRoleById(discordConfigurationProperties.copypastaRoleID());
 		Role adminRole = event.getGuild().getRoleById(discordConfigurationProperties.adminRoleID());
 		//* You need to have the copypasta role to be able to work with copypasta commands.
@@ -147,20 +122,6 @@ public class SlashCopypastaCommandListener extends ListenerAdapter {
 				event.reply("THE COPYPASTA YOU TRIED SENDING HAS EITHER BEEN DELETED OR DOES NOT EXIST. PLEASE CONTACT AN ADMIN IF YOU BELIEVE THAT THIS IS IN ERROR.").setEphemeral(false).queue();
 			}
 		}
-	}
-
-	private boolean isFormValid(FormConfigurationProperties.Form form) {
-		if (form.questions().size() > 5 || form.placeholders().size() > 5 || form.questions().size() != form.placeholders().size() ||
-			discordConfigurer.getJda().getTextChannelById(form.formChannel()) == null) return false;
-
-		for (String question : form.questions()) {
-			if (question.isBlank() || question.length() > 45) return false;
-		}
-
-		for (String placeholder : form.placeholders()) {
-			if (placeholder.isBlank() || placeholder.length() > 100) return false;
-		}
-		return true;
 	}
 
 }
